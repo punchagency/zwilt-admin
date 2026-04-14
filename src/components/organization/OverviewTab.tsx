@@ -14,7 +14,7 @@ interface OverviewTabProps {
     organization: Organization;
 }
 
-const StatItem: React.FC<{ label: string; value: string | number }> = ({ label, value }) => (
+const StatItem: React.FC<{ label: string; value: string | number | React.ReactNode }> = ({ label, value }) => (
     <Box sx={{ py: 1 }}>
         <Typography variant="caption" color="text.secondary" display="block">
             {label}

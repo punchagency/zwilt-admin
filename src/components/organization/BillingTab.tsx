@@ -18,14 +18,13 @@ import {
 } from '@mui/material';
 import { getOrganizationBilling } from '@/services/admin';
 import type { OrganizationBillingData, Organization } from '@/types';
-import { useSnackbar } from 'notistack';
+import { showError } from '@/utils/toast';
 
 interface BillingTabProps {
     organization: Organization;
 }
 
 const BillingTab: React.FC<BillingTabProps> = ({ organization }) => {
-    const { enqueueSnackbar } = useSnackbar();
     const [billing, setBilling] = useState<OrganizationBillingData | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -37,19 +36,17 @@ const BillingTab: React.FC<BillingTabProps> = ({ organization }) => {
                 if (response.success) {
                     setBilling(response.data);
                 } else {
-                    enqueueSnackbar('Failed to load billing data', { variant: 'error' });
+                    showError('Failed to load billing data');
                 }
             } catch (error: any) {
-                enqueueSnackbar(error.message || 'Error fetching billing', {
-                    variant: 'error',
-                });
+                showError(error.message || 'Error fetching billing');
             } finally {
                 setLoading(false);
             }
         };
 
         fetchBilling();
-    }, [organization._id, enqueueSnackbar]);
+    }, [organization._id]);
 
     if (loading) {
         return (

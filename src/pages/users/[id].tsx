@@ -14,7 +14,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { getUserDetails, updateUserSeatStatus, deleteUser } from '@/services/admin';
 import type { SeatUser, SeatStatus } from '@/types';
-import { useSnackbar } from 'notistack';
+import { showSuccess, showError } from '@/utils/toast';
 import OverviewTab from '@/components/user/OverviewTab';
 import ActivityTab from '@/components/user/ActivityTab';
 import ConfirmActionDialog from '@/components/user/ConfirmActionDialog';
@@ -48,7 +48,6 @@ function TabPanel(props: TabPanelProps) {
 const UserDetails: React.FC = () => {
     const router = useRouter();
     const { id } = router.query;
-    const { enqueueSnackbar } = useSnackbar();
     const [user, setUser] = useState<SeatUser | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState(0);
@@ -66,16 +65,14 @@ const UserDetails: React.FC = () => {
             if (response.success) {
                 setUser(response.data);
             } else {
-                enqueueSnackbar('Failed to load user', { variant: 'error' });
+                showError('Failed to load user');
             }
         } catch (error: any) {
-            enqueueSnackbar(error.message || 'Error loading user', {
-                variant: 'error',
-            });
+            showError(error.message || 'Error loading user');
         } finally {
             setLoading(false);
         }
-    }, [id, enqueueSnackbar]);
+    }, [id]);
 
     useEffect(() => {
         fetchUser();
@@ -93,19 +90,17 @@ const UserDetails: React.FC = () => {
                 });
                 if (response.success) {
                     setUser((prev) => (prev ? { ...prev, seatStatus: newStatus } : null));
-                    enqueueSnackbar(`User ${newStatus === 'SUSPENDED' ? 'suspended' : 'reactivated'}`, {
-                        variant: 'success',
-                    });
+                    showSuccess(`User ${newStatus === 'SUSPENDED' ? 'suspended' : 'reactivated'}`);
                 }
             } else if (confirmDialog.action === 'delete') {
                 const response = await deleteUser(user._id, confirmDialog.reason);
                 if (response.success) {
-                    enqueueSnackbar('User deleted', { variant: 'success' });
+                    showSuccess('User deleted');
                     router.push('/users');
                 }
             }
         } catch (error: any) {
-            enqueueSnackbar(error.message || 'Action failed', { variant: 'error' });
+            showError(error.message || 'Action failed');
         } finally {
             setConfirmDialog({ open: false, action: null, reason: '' });
         }

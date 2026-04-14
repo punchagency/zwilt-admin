@@ -19,7 +19,9 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import BusinessIcon from '@mui/icons-material/Business';
 import PeopleIcon from '@mui/icons-material/People';
 import SettingsIcon from '@mui/icons-material/Settings';
-import AssessmentIcon from '@mui/icons-material/Assessment';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import HistoryIcon from '@mui/icons-material/History';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -52,9 +54,19 @@ const menuItems: MenuItem[] = [
         icon: <PeopleIcon />,
     },
     {
-        text: 'Projects',
-        path: '/projects',
-        icon: <AssessmentIcon />,
+        text: 'Admin Management',
+        path: '/super-admins',
+        icon: <AdminPanelSettingsIcon />,
+    },
+    {
+        text: 'Earnings',
+        path: '/earnings',
+        icon: <AttachMoneyIcon />,
+    },
+    {
+        text: 'Audit Trails',
+        path: '/audit-trails',
+        icon: <HistoryIcon />,
     },
     {
         text: 'Settings',
@@ -102,25 +114,21 @@ const Sidebar: React.FC = () => {
                     justifyContent: 'space-between',
                 }}
             >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <svg width="34" height="23" viewBox="0 0 34 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.235 11.5224C18.235 16.5141 14.1852 20.5607 9.18952 20.5607C4.19384 20.5607 0.144043 16.5141 0.144043 11.5224C0.144043 6.53061 4.19384 2.484 9.18952 2.484C14.1852 2.484 18.235 6.53061 18.235 11.5224Z" fill="#FFBE2E"/>
+                        <path d="M15.909 22.1101V0.93457L34 11.5224L15.909 22.1101Z" fill="#FFBE2E"/>
+                    </svg>
                     <Typography
                         variant="h5"
                         sx={{
                             fontWeight: 700,
-                            color: 'primary.main',
+                            color: '#292933',
                             letterSpacing: '-0.5px',
                         }}
                     >
                         zwilt
                     </Typography>
-                    <Box
-                        sx={{
-                            width: 24,
-                            height: 24,
-                            backgroundColor: 'secondary.main',
-                            borderRadius: '50%',
-                        }}
-                    />
                 </Box>
                 <IconButton size="small" sx={{ color: 'text.secondary' }}>
                     <ChevronLeftIcon />

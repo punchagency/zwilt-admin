@@ -3,7 +3,7 @@ export interface IThemeFont {
 }
 
 const font: IThemeFont = {
-    primary: 'Switzer-Variable, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    primary: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 };
 
 export default font;

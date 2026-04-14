@@ -52,8 +52,8 @@ const OrganizationOverview: React.FC<OrganizationOverviewProps> = ({
         <Card
             sx={{
                 height: '100%',
-                border: '1px solid',
-                borderColor: 'divider',
+                border: '1.2px solid',
+                borderColor: '#0000001A',
                 borderRadius: 2,
                 backgroundColor: '#fff',
             }}

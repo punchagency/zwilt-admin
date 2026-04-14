@@ -16,7 +16,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LinkIcon from '@mui/icons-material/Link';
 import { getOrganizationDetails, updateOrganizationStatus, deleteOrganization } from '@/services/admin';
 import type { Organization, OrganizationStatus } from '@/types';
-import { useSnackbar } from 'notistack';
+import { showSuccess, showError } from '@/utils/toast';
 import OverviewTab from '@/components/organization/OverviewTab';
 import UsersTab from '@/components/organization/UsersTab';
 import BillingTab from '@/components/organization/BillingTab';
@@ -52,7 +52,6 @@ function TabPanel(props: TabPanelProps) {
 const OrganizationDetail: React.FC = () => {
     const router = useRouter();
     const { id } = router.query;
-    const { enqueueSnackbar } = useSnackbar();
     const [org, setOrg] = useState<Organization | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState(0);
@@ -70,16 +69,14 @@ const OrganizationDetail: React.FC = () => {
             if (response.success) {
                 setOrg(response.data);
             } else {
-                enqueueSnackbar('Failed to load organization', { variant: 'error' });
+                showError('Failed to load organization');
             }
         } catch (error: any) {
-            enqueueSnackbar(error.message || 'Error loading organization', {
-                variant: 'error',
-            });
+            showError(error.message || 'Error loading organization');
         } finally {
             setLoading(false);
         }
-    }, [id, enqueueSnackbar]);
+    }, [id]);
 
     useEffect(() => {
         fetchOrg();
@@ -97,19 +94,17 @@ const OrganizationDetail: React.FC = () => {
                 });
                 if (response.success) {
                     setOrg((prev) => (prev ? { ...prev, status: newStatus } : null));
-                    enqueueSnackbar(`Organization ${newStatus === 'SUSPENDED' ? 'suspended' : 'reactivated'}`, {
-                        variant: 'success',
-                    });
+                    showSuccess(`Organization ${newStatus === 'SUSPENDED' ? 'suspended' : 'reactivated'}`);
                 }
             } else if (confirmDialog.action === 'delete') {
                 const response = await deleteOrganization(org._id, confirmDialog.reason);
                 if (response.success) {
-                    enqueueSnackbar('Organization deleted', { variant: 'success' });
+                    showSuccess('Organization deleted');
                     router.push('/organizations');
                 }
             }
         } catch (error: any) {
-            enqueueSnackbar(error.message || 'Action failed', { variant: 'error' });
+            showError(error.message || 'Action failed');
         } finally {
             setConfirmDialog({ open: false, action: null, reason: '' });
         }

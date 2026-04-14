@@ -10,7 +10,7 @@ import {
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { getUsers } from '@/services/admin';
 import type { SeatUser, SeatStatus, AccountType } from '@/types';
-import { useSnackbar } from 'notistack';
+import { showError } from '@/utils/toast';
 
 interface UsersTabProps {
     organizationId: string;
@@ -23,7 +23,6 @@ const seatStatusColors: Record<SeatStatus, 'success' | 'error' | 'warning'> = {
 };
 
 const UsersTab: React.FC<UsersTabProps> = ({ organizationId }) => {
-    const { enqueueSnackbar } = useSnackbar();
     const [users, setUsers] = useState<SeatUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [paginationModel, setPaginationModel] = useState({
@@ -47,13 +46,11 @@ const UsersTab: React.FC<UsersTabProps> = ({ organizationId }) => {
                 setTotalRows(response.data.pagination.total);
             }
         } catch (error: any) {
-            enqueueSnackbar(error.message || 'Error fetching users', {
-                variant: 'error',
-            });
+            showError(error.message || 'Error fetching users');
         } finally {
             setLoading(false);
         }
-    }, [paginationModel.page, paginationModel.pageSize, organizationId, enqueueSnackbar]);
+    }, [paginationModel.page, paginationModel.pageSize, organizationId]);
 
     useEffect(() => {
         fetchUsers();
@@ -119,7 +116,7 @@ const UsersTab: React.FC<UsersTabProps> = ({ organizationId }) => {
             renderCell: (params: GridRenderCellParams) => (
                 <Chip
                     label={params.value}
-                    color={seatStatusColors[params.value] || 'default'}
+                    color={seatStatusColors[params.value as SeatStatus] || 'default'}
                     size="small"
                 />
             ),

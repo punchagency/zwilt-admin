@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
 import { GET_USER } from '@/graphql/auth';
 import { useUser } from '@/contexts/UserContext';
+import Loader from './Loader';
 
 /**
  * AuthGuard for admin pages.
@@ -72,7 +73,7 @@ const AuthGuard: React.FC<React.PropsWithChildren> = ({ children }) => {
                         setUser(user);
                         setAuthStatus('authenticated');
                     } else {
-                        log('[AuthGuard] ❌ NOT authenticating. user=', user, 'accountType=', user?.accountType);
+                        log(`[AuthGuard] ❌ NOT authenticating. user=${JSON.stringify(user)}, accountType=${user?.accountType}`);
                         if (typeof window !== 'undefined') {
                             window.location.href = '/auth/login';
                         }
@@ -96,17 +97,20 @@ const AuthGuard: React.FC<React.PropsWithChildren> = ({ children }) => {
             <Box
                 sx={{
                     minHeight: '100vh',
+                    width: '100vw',
                     display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 2,
                 }}
             >
-                <CircularProgress />
-                <Typography variant="body2" color="text.secondary">
-                    Verifying session...
-                </Typography>
+                <Box
+                    sx={{
+                        width: '800px',
+                        height: '800px',
+                    }}
+                >
+                    <Loader />
+                </Box>
             </Box>
         );
     }

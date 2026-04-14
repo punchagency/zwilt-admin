@@ -26,7 +26,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PersonIcon from '@mui/icons-material/Person';
 import { getUsers } from '@/services/admin';
 import type { SeatUser, AccountType, SeatStatus } from '@/types';
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import { showError } from '@/utils/toast';
 
 const accountTypeColors: Record<AccountType, string> = {
     CLIENT: '#2196F3',
@@ -47,7 +47,6 @@ const seatStatusColors: Record<SeatStatus, 'success' | 'error' | 'warning'> = {
 
 const UsersContent: React.FC = () => {
     const router = useRouter();
-    const { enqueueSnackbar } = useSnackbar();
     const [users, setUsers] = useState<SeatUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [paginationModel, setPaginationModel] = useState({
@@ -73,18 +72,14 @@ const UsersContent: React.FC = () => {
                 setUsers(response.data.users);
                 setTotalRows(response.data.pagination.total);
             } else {
-                enqueueSnackbar('Failed to fetch users', {
-                    variant: 'error',
-                });
+                showError('Failed to fetch users');
             }
         } catch (error: any) {
-            enqueueSnackbar(error.message || 'Error fetching users', {
-                variant: 'error',
-            });
+            showError(error.message || 'Error fetching users');
         } finally {
             setLoading(false);
         }
-    }, [paginationModel.page, paginationModel.pageSize, search, accountTypeFilter, enqueueSnackbar]);
+    }, [paginationModel.page, paginationModel.pageSize, search, accountTypeFilter]);
 
     useEffect(() => {
         fetchUsers();
@@ -185,7 +180,7 @@ const UsersContent: React.FC = () => {
                     label={params.value}
                     size="small"
                     sx={{
-                        backgroundColor: accountTypeColors[params.value] || '#9E9E9E',
+                        backgroundColor: accountTypeColors[params.value as AccountType] || '#9E9E9E',
                         color: '#fff',
                         fontWeight: 600,
                         fontSize: '0.75rem',
@@ -211,7 +206,7 @@ const UsersContent: React.FC = () => {
             renderCell: (params: GridRenderCellParams) => (
                 <Chip
                     label={params.value}
-                    color={seatStatusColors[params.value] || 'default'}
+                    color={seatStatusColors[params.value as SeatStatus] || 'default'}
                     size="small"
                 />
             ),
@@ -394,12 +389,4 @@ const UsersContent: React.FC = () => {
     );
 };
 
-const Users: React.FC = () => {
-    return (
-        <SnackbarProvider maxSnack={3}>
-            <UsersContent />
-        </SnackbarProvider>
-    );
-};
-
-export default Users;
+export default UsersContent;

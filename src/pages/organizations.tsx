@@ -26,7 +26,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
 import { getOrganizations, updateOrganizationStatus } from '@/services/admin';
 import type { Organization, OrganizationStatus } from '@/types';
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import { showError, showSuccess } from '@/utils/toast';
 
 const statusColors: Record<OrganizationStatus, 'success' | 'error' | 'warning' | 'default'> = {
     ACTIVE: 'success',
@@ -37,7 +37,6 @@ const statusColors: Record<OrganizationStatus, 'success' | 'error' | 'warning' |
 
 const OrganizationsContent: React.FC = () => {
     const router = useRouter();
-    const { enqueueSnackbar } = useSnackbar();
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [loading, setLoading] = useState(true);
     const [paginationModel, setPaginationModel] = useState({
@@ -62,18 +61,14 @@ const OrganizationsContent: React.FC = () => {
                 setOrganizations(response.data.organizations);
                 setTotalRows(response.data.pagination.total);
             } else {
-                enqueueSnackbar('Failed to fetch organizations', {
-                    variant: 'error',
-                });
+                showError('Failed to fetch organizations');
             }
         } catch (error: any) {
-            enqueueSnackbar(error.message || 'Error fetching organizations', {
-                variant: 'error',
-            });
+            showError(error.message || 'Error fetching organizations');
         } finally {
             setLoading(false);
         }
-    }, [paginationModel.page, paginationModel.pageSize, enqueueSnackbar]);
+    }, [paginationModel.page, paginationModel.pageSize]);
 
     useEffect(() => {
         fetchOrganizations();
@@ -111,19 +106,14 @@ const OrganizationsContent: React.FC = () => {
             });
 
             if (response.success) {
-                enqueueSnackbar('Organization status updated successfully', {
-                    variant: 'success',
-                });
+                showSuccess('Organization status updated successfully');
                 fetchOrganizations();
             } else {
-                enqueueSnackbar('Failed to update organization status', {
-                    variant: 'error',
-                });
+                showError('Failed to update organization status');
             }
         } catch (error: any) {
-            enqueueSnackbar(
+            showError(
                 error.message || 'Error updating organization status',
-                { variant: 'error' },
             );
         } finally {
             setStatusDialogOpen(false);
@@ -374,12 +364,4 @@ const OrganizationsContent: React.FC = () => {
     );
 };
 
-const Organizations: React.FC = () => {
-    return (
-        <SnackbarProvider maxSnack={3}>
-            <OrganizationsContent />
-        </SnackbarProvider>
-    );
-};
-
-export default Organizations;
+export default OrganizationsContent;

@@ -8,14 +8,14 @@ import ProjectTrend from '@/components/charts/ProjectTrend';
 import OrganizationOverview from '@/components/cards/OrganizationOverview';
 import { getAdminStats, getOrganizations } from '@/services/admin';
 import type { AdminStats, Organization } from '@/types';
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import { showError } from '@/utils/toast';
 
 const StatCardSkeleton = () => (
     <Card
         sx={{
             height: '100%',
-            border: '1px solid',
-            borderColor: 'divider',
+            border: '1.2px solid',
+            borderColor: '#0000001A',
             borderRadius: 2,
         }}
     >
@@ -29,7 +29,6 @@ const StatCardSkeleton = () => (
 );
 
 const OverviewContent: React.FC = () => {
-    const { enqueueSnackbar } = useSnackbar();
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [loading, setLoading] = useState(true);
@@ -52,16 +51,14 @@ const OverviewContent: React.FC = () => {
                 }
             } catch (error: any) {
                 console.warn('Dashboard fetch error:', error.message);
-                enqueueSnackbar('Some data could not be loaded', {
-                    variant: 'warning',
-                });
+                showError('Some data could not be loaded');
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, [enqueueSnackbar]);
+    }, []);
 
     return (
         <Box>
@@ -159,9 +156,9 @@ const OverviewContent: React.FC = () => {
                             mainValue={stats?.users.total || 0}
                             items={[
                                 {
-                                    label: 'Project Managers',
+                                    label: 'Admins',
                                     value: stats?.users.admins || 0,
-                                    color: '#4CAF50',
+                                    color: '#50589F',
                                 },
                                 {
                                     label: 'Regular Users',
@@ -190,11 +187,7 @@ const OverviewContent: React.FC = () => {
 };
 
 const Overview: React.FC = () => {
-    return (
-        <SnackbarProvider maxSnack={3}>
-            <OverviewContent />
-        </SnackbarProvider>
-    );
+    return <OverviewContent />;
 };
 
 export default Overview;
