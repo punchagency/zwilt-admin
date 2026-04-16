@@ -13,7 +13,11 @@ import {
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useUser } from '@/contexts/UserContext';
+import { useRecoilState } from 'recoil';
+import themeAtom from '@/atoms/theme-atom';
 
 interface HeaderProps {
     title: string;
@@ -22,7 +26,14 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title, breadcrumbs }) => {
     const { user } = useUser();
+    const [themeState, setThemeState] = useRecoilState(themeAtom);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    const toggleTheme = () => {
+        const newMode = !themeState.prefersDarkMode;
+        setThemeState({ prefersDarkMode: newMode });
+        localStorage.setItem('zwilt-admin-theme', newMode ? 'dark' : 'light');
+    };
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -32,15 +43,19 @@ const Header: React.FC<HeaderProps> = ({ title, breadcrumbs }) => {
         setAnchorEl(null);
     };
 
-    const userInitials = user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'A';
-    const userName = user?.name || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Admin User';
+    const userInitials =
+        user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'A';
+    const userName =
+        user?.name ||
+        `${user?.firstName || ''} ${user?.lastName || ''}`.trim() ||
+        'Admin User';
 
     return (
         <AppBar
             position="sticky"
             elevation={0}
             sx={{
-                backgroundColor: '#fff',
+                backgroundColor: 'background.paper',
                 borderBottom: '1px solid',
                 borderColor: 'divider',
             }}
@@ -93,7 +108,19 @@ const Header: React.FC<HeaderProps> = ({ title, breadcrumbs }) => {
                     </Typography>
                 </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <IconButton
+                        size="large"
+                        onClick={toggleTheme}
+                        sx={{ color: 'text.secondary' }}
+                    >
+                        {themeState.prefersDarkMode ? (
+                            <LightModeIcon />
+                        ) : (
+                            <DarkModeIcon />
+                        )}
+                    </IconButton>
+
                     <IconButton
                         size="large"
                         color="inherit"
@@ -131,8 +158,15 @@ const Header: React.FC<HeaderProps> = ({ title, breadcrumbs }) => {
                             horizontal: 'right',
                         }}
                     >
-                        <MenuItem disabled sx={{ fontWeight: 600 }}>{userName}</MenuItem>
-                        <MenuItem disabled sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>{user?.email}</MenuItem>
+                        <MenuItem disabled sx={{ fontWeight: 600 }}>
+                            {userName}
+                        </MenuItem>
+                        <MenuItem
+                            disabled
+                            sx={{ fontSize: '0.8rem', color: 'text.secondary' }}
+                        >
+                            {user?.email}
+                        </MenuItem>
                         <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
                         <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
                         <MenuItem onClick={handleMenuClose}>Logout</MenuItem>

@@ -58,7 +58,10 @@ export const updateOrganizationStatus = async (
     id: string,
     data: UpdateOrganizationStatusRequest,
 ): Promise<ApiResponse<Organization>> => {
-    const response = await api.patch(`/api/admin/organizations/${id}/status`, data);
+    const response = await api.patch(
+        `/api/admin/organizations/${id}/status`,
+        data,
+    );
     return response.data;
 };
 
@@ -69,6 +72,25 @@ export const deleteOrganization = async (
     const response = await api.delete(`/api/admin/organizations/${id}`, {
         data: { reason },
     });
+    return response.data;
+};
+
+export const createOrganization = async (
+    data: any,
+): Promise<ApiResponse<Organization>> => {
+    const response = await api.post('/api/admin/organizations', data);
+    return response.data;
+};
+
+export const getUploadUrl = async (fileData: {
+    fileName: string;
+    fileType: string;
+    fileSize: number;
+    dirName?: string;
+}): Promise<
+    ApiResponse<{ presignedUrl: string; key: string; url: string }>
+> => {
+    const response = await api.post('/api/admin/upload-url', fileData);
     return response.data;
 };
 
@@ -90,6 +112,16 @@ export const getUsers = async (
     const response = await api.get('/api/admin/users', {
         params: { page, limit, search, accountType, orgId },
     });
+    return response.data;
+};
+
+export const createUser = async (data: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    name: string;
+}): Promise<ApiResponse<SeatUser>> => {
+    const response = await api.post('/api/admin/users', data);
     return response.data;
 };
 
@@ -125,9 +157,15 @@ export const deleteUser = async (
 
 export const getProjectTrend = async (
     range: '6m' | '1y' | 'all' = '6m',
-): Promise<ApiResponse<
-    Array<{ date: string; projectsCreated: number; projectsArchived: number }>
->> => {
+): Promise<
+    ApiResponse<
+        Array<{
+            date: string;
+            projectsCreated: number;
+            projectsArchived: number;
+        }>
+    >
+> => {
     const response = await api.get('/api/admin/project-trend', {
         params: { range },
     });
@@ -166,7 +204,10 @@ export const updateAdminRole = async (
     id: string,
     data: UpdateAdminRoleRequest,
 ): Promise<ApiResponse<SuperAdminUser>> => {
-    const response = await api.patch(`/api/admin/super-admins/${id}/role`, data);
+    const response = await api.patch(
+        `/api/admin/super-admins/${id}/role`,
+        data,
+    );
     return response.data;
 };
 
@@ -218,13 +259,15 @@ export const getAuditLogDetails = async (
     return response.data;
 };
 
-export const getAuditActionsList = async (): Promise<ApiResponse<{
-    actions: Array<{
-        action: string;
-        label: string;
-        category: string;
-    }>;
-}>> => {
+export const getAuditActionsList = async (): Promise<
+    ApiResponse<{
+        actions: Array<{
+            action: string;
+            label: string;
+            category: string;
+        }>;
+    }>
+> => {
     const response = await api.get('/api/admin/audit-logs/actions');
     return response.data;
 };
@@ -261,7 +304,9 @@ export const getPayments = async (
     return response.data;
 };
 
-export const getPlanDistribution = async (): Promise<ApiResponse<PlanDistribution>> => {
+export const getPlanDistribution = async (): Promise<
+    ApiResponse<PlanDistribution>
+> => {
     const response = await api.get('/api/admin/earnings/plan-distribution');
     return response.data;
 };

@@ -10,6 +10,7 @@ import {
     Select,
     MenuItem,
     SelectChangeEvent,
+    useTheme,
 } from '@mui/material';
 import {
     LineChart,
@@ -44,6 +45,7 @@ const ChartSkeleton = () => (
 );
 
 const ProjectTrend: React.FC<ProjectTrendProps> = ({ data: propData }) => {
+    const theme = useTheme();
     const [data, setData] = useState<ChartDataPoint[]>(propData || []);
     const [loading, setLoading] = useState(!propData);
     const [timeRange, setTimeRange] = useState<'6m' | '1y' | 'all'>('all');
@@ -59,7 +61,7 @@ const ProjectTrend: React.FC<ProjectTrendProps> = ({ data: propData }) => {
                 setLoading(true);
                 const response = await getProjectTrend(timeRange);
                 if (response.success && response.data) {
-                    const validData = response.data.map(item => ({
+                    const validData = response.data.map((item) => ({
                         date: item.date || 'Unknown',
                         projectsCreated: Number(item.projectsCreated) || 0,
                         projectsArchived: Number(item.projectsArchived) || 0,
@@ -84,10 +86,11 @@ const ProjectTrend: React.FC<ProjectTrendProps> = ({ data: propData }) => {
         return (
             <Card
                 sx={{
-                    border: '1px solid',
+                    height: '100%',
+                    border: '1.2px solid',
                     borderColor: 'divider',
                     borderRadius: 2,
-                    backgroundColor: '#fff',
+                    backgroundColor: 'background.paper',
                 }}
             >
                 <ChartSkeleton />
@@ -98,13 +101,18 @@ const ProjectTrend: React.FC<ProjectTrendProps> = ({ data: propData }) => {
     return (
         <Card
             sx={{
-                border: '1px solid',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                border: '1.2px solid',
                 borderColor: 'divider',
                 borderRadius: 2,
-                backgroundColor: '#fff',
+                backgroundColor: 'background.paper',
             }}
         >
-            <CardContent>
+            <CardContent
+                sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+            >
                 <Box
                     sx={{
                         display: 'flex',
@@ -139,7 +147,7 @@ const ProjectTrend: React.FC<ProjectTrendProps> = ({ data: propData }) => {
                             sx={{
                                 width: 12,
                                 height: 12,
-                                backgroundColor: '#50589F',
+                                backgroundColor: 'primary.main',
                                 borderRadius: '2px',
                             }}
                         />
@@ -152,7 +160,7 @@ const ProjectTrend: React.FC<ProjectTrendProps> = ({ data: propData }) => {
                             sx={{
                                 width: 12,
                                 height: 12,
-                                backgroundColor: '#FF9800',
+                                backgroundColor: 'warning.main',
                                 borderRadius: '2px',
                             }}
                         />
@@ -163,43 +171,57 @@ const ProjectTrend: React.FC<ProjectTrendProps> = ({ data: propData }) => {
                 </Box>
 
                 {data.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary" sx={{ py: 8, textAlign: 'center' }}>
-                        No project trend data available for this period
-                    </Typography>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ py: 8, textAlign: 'center' }}
+                    ></Typography>
                 ) : (
-                    <Box sx={{ height: 300 }}>
+                    <Box sx={{ flex: 1, minHeight: 300 }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart
                                 data={data}
-                                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                margin={{
+                                    top: 5,
+                                    right: 30,
+                                    left: 20,
+                                    bottom: 5,
+                                }}
                             >
                                 <CartesianGrid
                                     strokeDasharray="3 3"
-                                    stroke="#E5E7EB"
+                                    stroke={theme.palette.divider}
                                 />
                                 <XAxis
                                     dataKey="date"
-                                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                                    tick={{
+                                        fontSize: 12,
+                                        fill: theme.palette.text.secondary,
+                                    }}
                                     axisLine={false}
                                     tickLine={false}
                                 />
                                 <YAxis
-                                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                                    tick={{
+                                        fontSize: 12,
+                                        fill: theme.palette.text.secondary,
+                                    }}
                                     axisLine={false}
                                     tickLine={false}
                                 />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: '#fff',
-                                        border: '1px solid #E5E7EB',
+                                        backgroundColor:
+                                            theme.palette.background.paper,
+                                        border: `1px solid ${theme.palette.divider}`,
                                         borderRadius: 8,
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                                        boxShadow: theme.shadows[1],
                                     }}
                                 />
                                 <Line
                                     type="monotone"
                                     dataKey="projectsCreated"
-                                    stroke="#50589F"
+                                    stroke={theme.palette.primary.main}
                                     strokeWidth={2}
                                     dot={false}
                                     activeDot={{ r: 6 }}
@@ -207,7 +229,7 @@ const ProjectTrend: React.FC<ProjectTrendProps> = ({ data: propData }) => {
                                 <Line
                                     type="monotone"
                                     dataKey="projectsArchived"
-                                    stroke="#FF9800"
+                                    stroke={theme.palette.warning.main}
                                     strokeWidth={2}
                                     dot={false}
                                     activeDot={{ r: 6 }}

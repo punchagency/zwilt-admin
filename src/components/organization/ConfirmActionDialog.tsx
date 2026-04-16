@@ -8,6 +8,7 @@ import {
     TextField,
     Typography,
     Box,
+    alpha,
 } from '@mui/material';
 
 interface ConfirmActionDialogProps {
@@ -35,12 +36,21 @@ const ConfirmActionDialog: React.FC<ConfirmActionDialogProps> = ({
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle
                 sx={{
-                    backgroundColor: isDelete ? '#FEF2F2' : '#FFFBEB',
+                    backgroundColor: (theme) =>
+                        alpha(
+                            isDelete
+                                ? theme.palette.error.main
+                                : theme.palette.warning.main,
+                            0.08,
+                        ),
                     borderBottom: '1px solid',
                     borderColor: 'divider',
                 }}
             >
-                <Typography variant="h6" color={isDelete ? 'error.main' : 'warning.main'}>
+                <Typography
+                    variant="h6"
+                    color={isDelete ? 'error.main' : 'warning.main'}
+                >
                     {isDelete ? 'Delete Organization' : 'Suspend Organization'}
                 </Typography>
             </DialogTitle>
@@ -67,7 +77,11 @@ const ConfirmActionDialog: React.FC<ConfirmActionDialogProps> = ({
                 </Typography>
 
                 <TextField
-                    label={isDelete ? 'Reason for deletion' : 'Reason for suspension'}
+                    label={
+                        isDelete
+                            ? 'Reason for deletion'
+                            : 'Reason for suspension'
+                    }
                     multiline
                     rows={3}
                     value={reason}

@@ -8,6 +8,7 @@ import {
     Paper,
     Stack,
     Avatar,
+    alpha,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -17,11 +18,14 @@ interface AuditLogCardProps {
     log: AuditLog;
 }
 
-const severityConfig: Record<AuditSeverity, { color: string; bg: string; label: string }> = {
-    info: { color: '#1976D2', bg: '#E3F2FD', label: 'Info' },
-    warning: { color: '#ED6C02', bg: '#FFF3E0', label: 'Warning' },
-    error: { color: '#D32F2F', bg: '#FFEBEE', label: 'Error' },
-    critical: { color: '#B71C1C', bg: '#FFCDD2', label: 'Critical' },
+const severityConfig: Record<
+    AuditSeverity,
+    { color: string; bg: string; label: string }
+> = {
+    info: { color: 'info.main', bg: 'info.light', label: 'Info' },
+    warning: { color: 'warning.main', bg: 'warning.light', label: 'Warning' },
+    error: { color: 'error.main', bg: 'error.light', label: 'Error' },
+    critical: { color: 'error.main', bg: 'error.light', label: 'Critical' },
 };
 
 const actionLabels: Record<string, string> = {
@@ -72,7 +76,10 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
         return date.toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
-            year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+            year:
+                date.getFullYear() !== now.getFullYear()
+                    ? 'numeric'
+                    : undefined,
             hour: '2-digit',
             minute: '2-digit',
         });
@@ -83,11 +90,12 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
             sx={{
                 p: 2,
                 border: '1px solid',
-                borderColor: log.severity === 'critical' ? '#FFCDD2' : '#E0E0E9',
+                borderColor:
+                    log.severity === 'critical' ? 'error.light' : 'divider',
                 borderRadius: 2,
                 transition: 'box-shadow 0.2s',
                 '&:hover': {
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                    boxShadow: 1,
                 },
             }}
         >
@@ -96,7 +104,7 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                     sx={{
                         width: 36,
                         height: 36,
-                        backgroundColor: '#50589F',
+                        backgroundColor: 'primary.main',
                         fontSize: '12px',
                         fontWeight: 600,
                         flexShrink: 0,
@@ -116,7 +124,11 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                         }}
                     >
                         <Box>
-                            <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
+                            <Typography
+                                variant="body2"
+                                fontWeight={500}
+                                sx={{ mb: 0.5 }}
+                            >
                                 <strong>{log.performedBy.name}</strong>{' '}
                                 <Typography
                                     component="span"
@@ -131,12 +143,27 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                             </Typography>
                         </Box>
 
-                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                gap: 1,
+                                alignItems: 'center',
+                            }}
+                        >
                             <Chip
                                 label={sev.label}
                                 size="small"
                                 sx={{
-                                    backgroundColor: sev.bg,
+                                    backgroundColor: (theme) =>
+                                        alpha(
+                                            theme.palette[
+                                                sev.color.split('.')[0] as
+                                                    | 'info'
+                                                    | 'warning'
+                                                    | 'error'
+                                            ].main,
+                                            0.1,
+                                        ),
                                     color: sev.color,
                                     fontWeight: 600,
                                     fontSize: '0.6875rem',
@@ -145,7 +172,10 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                             />
                             {log.target && (
                                 <Chip
-                                    label={`${log.target.type}: ${log.target.name || log.target.id.slice(0, 8)}`}
+                                    label={`${log.target.type}: ${
+                                        log.target.name ||
+                                        log.target.id.slice(0, 8)
+                                    }`}
                                     size="small"
                                     variant="outlined"
                                     sx={{ fontSize: '0.6875rem', height: 20 }}
@@ -187,7 +217,7 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                                     sx={{
                                         mt: 1,
                                         p: 1.5,
-                                        backgroundColor: '#F8F9FA',
+                                        backgroundColor: 'background.secondary',
                                         borderRadius: 1,
                                     }}
                                 >
@@ -215,8 +245,9 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                                                             component="span"
                                                             variant="caption"
                                                             sx={{
-                                                                color: '#D32F2F',
-                                                                textDecoration: 'line-through',
+                                                                color: 'error.main',
+                                                                textDecoration:
+                                                                    'line-through',
                                                                 mr: 1,
                                                             }}
                                                         >
@@ -225,21 +256,32 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                                                         <Typography
                                                             component="span"
                                                             variant="caption"
-                                                            sx={{ color: '#2E7D32', fontWeight: 600 }}
+                                                            sx={{
+                                                                color: 'success.main',
+                                                                fontWeight: 600,
+                                                            }}
                                                         >
                                                             {String(value.new)}
                                                         </Typography>
                                                     </Box>
                                                 </Box>
-                                            )
+                                            ),
                                         )}
                                     {log.details.ipAddress && (
-                                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                                        <Typography
+                                            variant="caption"
+                                            color="text.secondary"
+                                            sx={{ mt: 1, display: 'block' }}
+                                        >
                                             IP: {log.details.ipAddress}
                                         </Typography>
                                     )}
                                     {log.details.userAgent && (
-                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                        <Typography
+                                            variant="caption"
+                                            color="text.secondary"
+                                            sx={{ display: 'block' }}
+                                        >
                                             UA: {log.details.userAgent}
                                         </Typography>
                                     )}

@@ -52,9 +52,7 @@ const CreateAdminDialog: React.FC<CreateAdminDialogProps> = ({
 
     return (
         <Dialog open={open} onClose={onCancel} maxWidth="sm" fullWidth>
-            <DialogTitle sx={{ fontWeight: 600 }}>
-                Create New Admin
-            </DialogTitle>
+            <DialogTitle sx={{ fontWeight: 600 }}>Create New Admin</DialogTitle>
             <DialogContent>
                 <TextField
                     fullWidth
@@ -99,7 +97,13 @@ const CreateAdminDialog: React.FC<CreateAdminDialogProps> = ({
                 >
                     {ADMIN_ROLES_CONFIG.map((r) => (
                         <MenuItem key={r.role} value={r.role}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                }}
+                            >
                                 <Box
                                     sx={{
                                         width: 12,
@@ -118,12 +122,16 @@ const CreateAdminDialog: React.FC<CreateAdminDialogProps> = ({
                     <Box
                         sx={{
                             p: 2,
-                            backgroundColor: '#F8F9FA',
+                            backgroundColor: 'background.secondary',
                             borderRadius: 2,
                             mb: 2,
                         }}
                     >
-                        <Typography variant="caption" color="text.secondary" display="block">
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            display="block"
+                        >
                             {roleConfig.description}
                         </Typography>
                     </Box>
@@ -139,7 +147,9 @@ const CreateAdminDialog: React.FC<CreateAdminDialogProps> = ({
                     placeholder="Why is this admin account needed?"
                     required
                     error={!reason.trim() && loading}
-                    helperText={!reason.trim() && loading ? 'Reason is required' : ''}
+                    helperText={
+                        !reason.trim() && loading ? 'Reason is required' : ''
+                    }
                 />
 
                 {error && (
@@ -155,7 +165,12 @@ const CreateAdminDialog: React.FC<CreateAdminDialogProps> = ({
                 <Button
                     variant="contained"
                     onClick={onConfirm}
-                    disabled={loading || !name.trim() || !email.trim() || !reason.trim()}
+                    disabled={
+                        loading ||
+                        !name.trim() ||
+                        !email.trim() ||
+                        !reason.trim()
+                    }
                     sx={{ textTransform: 'none', borderRadius: 2 }}
                 >
                     {loading ? 'Creating...' : 'Create Admin'}

@@ -14,7 +14,11 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LinkIcon from '@mui/icons-material/Link';
-import { getOrganizationDetails, updateOrganizationStatus, deleteOrganization } from '@/services/admin';
+import {
+    getOrganizationDetails,
+    updateOrganizationStatus,
+    deleteOrganization,
+} from '@/services/admin';
 import type { Organization, OrganizationStatus } from '@/types';
 import { showSuccess, showError } from '@/utils/toast';
 import OverviewTab from '@/components/organization/OverviewTab';
@@ -22,7 +26,10 @@ import UsersTab from '@/components/organization/UsersTab';
 import BillingTab from '@/components/organization/BillingTab';
 import ConfirmActionDialog from '@/components/organization/ConfirmActionDialog';
 
-const statusColors: Record<OrganizationStatus, 'success' | 'error' | 'warning' | 'default'> = {
+const statusColors: Record<
+    OrganizationStatus,
+    'success' | 'error' | 'warning' | 'default'
+> = {
     ACTIVE: 'success',
     SUSPENDED: 'error',
     DEACTIVATED: 'default',
@@ -63,6 +70,10 @@ const OrganizationDetail: React.FC = () => {
 
     const fetchOrg = useCallback(async () => {
         if (!id || typeof id !== 'string') return;
+        if (id === 'new') {
+            setLoading(false);
+            return;
+        }
         try {
             setLoading(true);
             const response = await getOrganizationDetails(id);
@@ -87,17 +98,29 @@ const OrganizationDetail: React.FC = () => {
 
         try {
             if (confirmDialog.action === 'suspend') {
-                const newStatus = org.status === 'SUSPENDED' ? 'ACTIVE' : 'SUSPENDED';
+                const newStatus =
+                    org.status === 'SUSPENDED' ? 'ACTIVE' : 'SUSPENDED';
                 const response = await updateOrganizationStatus(org._id, {
                     status: newStatus,
                     reason: confirmDialog.reason,
                 });
                 if (response.success) {
-                    setOrg((prev) => (prev ? { ...prev, status: newStatus } : null));
-                    showSuccess(`Organization ${newStatus === 'SUSPENDED' ? 'suspended' : 'reactivated'}`);
+                    setOrg((prev) =>
+                        prev ? { ...prev, status: newStatus } : null,
+                    );
+                    showSuccess(
+                        `Organization ${
+                            newStatus === 'SUSPENDED'
+                                ? 'suspended'
+                                : 'reactivated'
+                        }`,
+                    );
                 }
             } else if (confirmDialog.action === 'delete') {
-                const response = await deleteOrganization(org._id, confirmDialog.reason);
+                const response = await deleteOrganization(
+                    org._id,
+                    confirmDialog.reason,
+                );
                 if (response.success) {
                     showSuccess('Organization deleted');
                     router.push('/organizations');
@@ -114,7 +137,12 @@ const OrganizationDetail: React.FC = () => {
         return (
             <Box>
                 <Skeleton variant="text" width={200} sx={{ mb: 2 }} />
-                <Skeleton variant="text" width={300} height={40} sx={{ mb: 1 }} />
+                <Skeleton
+                    variant="text"
+                    width={300}
+                    height={40}
+                    sx={{ mb: 1 }}
+                />
                 <Skeleton variant="text" width={150} sx={{ mb: 3 }} />
                 <Skeleton variant="rectangular" width="100%" height={300} />
             </Box>
@@ -127,7 +155,11 @@ const OrganizationDetail: React.FC = () => {
                 <Typography variant="h6" color="text.secondary">
                     Organization not found
                 </Typography>
-                <Button startIcon={<ArrowBackIcon />} onClick={() => router.push('/organizations')} sx={{ mt: 2 }}>
+                <Button
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => router.push('/organizations')}
+                    sx={{ mt: 2 }}
+                >
                     Back to Organizations
                 </Button>
             </Box>
@@ -146,15 +178,32 @@ const OrganizationDetail: React.FC = () => {
                     Back to Organizations
                 </Button>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        mb: 1,
+                    }}
+                >
                     <Avatar
                         src={org.logo || undefined}
-                        sx={{ width: 56, height: 56, backgroundColor: 'primary.main' }}
+                        sx={{
+                            width: 56,
+                            height: 56,
+                            backgroundColor: 'primary.main',
+                        }}
                     >
                         {org.name?.charAt(0) || 'O'}
                     </Avatar>
                     <Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 2,
+                            }}
+                        >
                             <Typography variant="h4" fontWeight={700}>
                                 {org.name}
                             </Typography>
@@ -178,7 +227,11 @@ const OrganizationDetail: React.FC = () => {
                             href={org.companyWebsite}
                             target="_blank"
                             rel="noopener"
-                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                            }}
                         >
                             <LinkIcon fontSize="small" />
                             Website
@@ -186,7 +239,9 @@ const OrganizationDetail: React.FC = () => {
                     )}
                     <Button
                         variant="outlined"
-                        color={org.status === 'SUSPENDED' ? 'success' : 'warning'}
+                        color={
+                            org.status === 'SUSPENDED' ? 'success' : 'warning'
+                        }
                         size="small"
                         onClick={() =>
                             setConfirmDialog({
@@ -218,7 +273,11 @@ const OrganizationDetail: React.FC = () => {
             </Box>
 
             {/* Tabs */}
-            <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} sx={{ mb: 2 }}>
+            <Tabs
+                value={activeTab}
+                onChange={(_, v) => setActiveTab(v)}
+                sx={{ mb: 2 }}
+            >
                 <Tab label="Overview" />
                 <Tab label={`Users (${org.userCount || 0})`} />
                 <Tab label="Billing" />
@@ -241,8 +300,12 @@ const OrganizationDetail: React.FC = () => {
                 action={confirmDialog.action}
                 organizationName={org.name}
                 reason={confirmDialog.reason}
-                onReasonChange={(reason) => setConfirmDialog((prev) => ({ ...prev, reason }))}
-                onClose={() => setConfirmDialog({ open: false, action: null, reason: '' })}
+                onReasonChange={(reason) =>
+                    setConfirmDialog((prev) => ({ ...prev, reason }))
+                }
+                onClose={() =>
+                    setConfirmDialog({ open: false, action: null, reason: '' })
+                }
                 onConfirm={handleStatusChange}
             />
         </Box>

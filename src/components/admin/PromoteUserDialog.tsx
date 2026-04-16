@@ -17,6 +17,7 @@ import {
     ListItemAvatar,
     ListItemText,
     CircularProgress,
+    alpha,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { AdminRole, ADMIN_ROLES_CONFIG, SeatUser } from '@/types';
@@ -63,14 +64,23 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
         const fetchUsers = async () => {
             setUserLoading(true);
             try {
-                const res = await getUsers(1, 100, undefined, undefined, undefined);
+                const res = await getUsers(
+                    1,
+                    100,
+                    undefined,
+                    undefined,
+                    undefined,
+                );
                 if (res.success) {
                     // Filter out existing admins
                     const nonAdmins = res.data.users.filter(
                         (u) =>
-                            !['ADMIN', 'SUPER_ADMIN', 'SUPPORT_ADMIN', 'AUDIT_ADMIN'].includes(
-                                u.accountType,
-                            ),
+                            ![
+                                'ADMIN',
+                                'SUPER_ADMIN',
+                                'SUPPORT_ADMIN',
+                                'AUDIT_ADMIN',
+                            ].includes(u.accountType),
                     );
                     setUsers(nonAdmins);
                 }
@@ -106,7 +116,11 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                 Promote User to Admin
             </DialogTitle>
             <DialogContent>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 2 }}
+                >
                     Select an existing user to promote to an admin role.
                 </Typography>
 
@@ -132,7 +146,7 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                         maxHeight: 250,
                         overflowY: 'auto',
                         border: '1px solid',
-                        borderColor: '#E0E0E9',
+                        borderColor: 'divider',
                         borderRadius: 2,
                         mb: 2,
                     }}
@@ -144,7 +158,9 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                     ) : filteredUsers.length === 0 ? (
                         <Box sx={{ p: 3, textAlign: 'center' }}>
                             <Typography variant="body2" color="text.secondary">
-                                {search ? 'No users match your search' : 'No users found'}
+                                {search
+                                    ? 'No users match your search'
+                                    : 'No users found'}
                             </Typography>
                         </Box>
                     ) : (
@@ -155,12 +171,18 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                                     onClick={() => setSelectedUser(user)}
                                     sx={{
                                         cursor: 'pointer',
-                                        backgroundColor: selectedUser?._id === user._id ? '#F0F0F5' : 'transparent',
+                                        backgroundColor:
+                                            selectedUser?._id === user._id
+                                                ? 'action.selected'
+                                                : 'transparent',
                                         '&:hover': {
-                                            backgroundColor: selectedUser?._id === user._id ? '#E8E8F0' : '#F8F9FA',
+                                            backgroundColor:
+                                                selectedUser?._id === user._id
+                                                    ? 'action.selected'
+                                                    : 'action.hover',
                                         },
                                         borderBottom: '1px solid',
-                                        borderColor: '#F0F0F5',
+                                        borderColor: 'divider',
                                     }}
                                 >
                                     <ListItemAvatar>
@@ -169,7 +191,7 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                                             sx={{
                                                 width: 36,
                                                 height: 36,
-                                                backgroundColor: '#50589F',
+                                                backgroundColor: 'primary.main',
                                                 fontSize: '12px',
                                                 fontWeight: 600,
                                             }}
@@ -179,18 +201,30 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                                     </ListItemAvatar>
                                     <ListItemText
                                         primary={
-                                            <Typography variant="body2" fontWeight={600}>
+                                            <Typography
+                                                variant="body2"
+                                                fontWeight={600}
+                                            >
                                                 {user.name}
                                             </Typography>
                                         }
                                         secondary={
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography
+                                                variant="caption"
+                                                color="text.secondary"
+                                            >
                                                 {user.email}
                                             </Typography>
                                         }
                                     />
                                     {selectedUser?._id === user._id && (
-                                        <Typography variant="caption" sx={{ color: '#50589F', fontWeight: 600 }}>
+                                        <Typography
+                                            variant="caption"
+                                            sx={{
+                                                color: 'primary.main',
+                                                fontWeight: 600,
+                                            }}
+                                        >
                                             Selected
                                         </Typography>
                                     )}
@@ -204,12 +238,17 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                     <Box
                         sx={{
                             p: 2,
-                            backgroundColor: '#F0F4FF',
+                            backgroundColor: (theme) =>
+                                alpha(theme.palette.primary.main, 0.08),
                             borderRadius: 2,
                             mb: 2,
                         }}
                     >
-                        <Typography variant="caption" color="text.secondary" display="block">
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            display="block"
+                        >
                             Selected User:
                         </Typography>
                         <Typography variant="body2" fontWeight={600}>
@@ -230,7 +269,13 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                 >
                     {ADMIN_ROLES_CONFIG.map((r) => (
                         <MenuItem key={r.role} value={r.role}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                }}
+                            >
                                 <Box
                                     sx={{
                                         width: 12,
@@ -249,12 +294,16 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                     <Box
                         sx={{
                             p: 2,
-                            backgroundColor: '#F8F9FA',
+                            backgroundColor: 'background.secondary',
                             borderRadius: 2,
                             mb: 2,
                         }}
                     >
-                        <Typography variant="caption" color="text.secondary" display="block">
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            display="block"
+                        >
                             {roleConfig.description}
                         </Typography>
                     </Box>
@@ -271,7 +320,9 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                     placeholder="Why is this user being promoted?"
                     required
                     error={!reason.trim() && loading}
-                    helperText={!reason.trim() && loading ? 'Reason is required' : ''}
+                    helperText={
+                        !reason.trim() && loading ? 'Reason is required' : ''
+                    }
                 />
 
                 {error && (

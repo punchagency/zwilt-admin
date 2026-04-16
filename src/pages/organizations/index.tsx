@@ -28,7 +28,10 @@ import { getOrganizations, updateOrganizationStatus } from '@/services/admin';
 import type { Organization, OrganizationStatus } from '@/types';
 import { showError, showSuccess } from '@/utils/toast';
 
-const statusColors: Record<OrganizationStatus, 'success' | 'error' | 'warning' | 'default'> = {
+const statusColors: Record<
+    OrganizationStatus,
+    'success' | 'error' | 'warning' | 'default'
+> = {
     ACTIVE: 'success',
     SUSPENDED: 'error',
     DEACTIVATED: 'default',
@@ -49,8 +52,13 @@ const OrganizationsContent: React.FC = () => {
     const [statusDialogOpen, setStatusDialogOpen] = useState(false);
     const [newStatus, setNewStatus] = useState<OrganizationStatus>('ACTIVE');
     const [reason, setReason] = useState('');
+    const lastFetchParams = React.useRef<string>('');
 
     const fetchOrganizations = useCallback(async () => {
+        const currentParams = JSON.stringify(paginationModel);
+        if (lastFetchParams.current === currentParams) return;
+        lastFetchParams.current = currentParams;
+
         try {
             setLoading(true);
             const response = await getOrganizations(
@@ -68,7 +76,7 @@ const OrganizationsContent: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [paginationModel.page, paginationModel.pageSize]);
+    }, [paginationModel]);
 
     useEffect(() => {
         fetchOrganizations();
@@ -112,9 +120,7 @@ const OrganizationsContent: React.FC = () => {
                 showError('Failed to update organization status');
             }
         } catch (error: any) {
-            showError(
-                error.message || 'Error updating organization status',
-            );
+            showError(error.message || 'Error updating organization status');
         } finally {
             setStatusDialogOpen(false);
             setReason('');
@@ -131,8 +137,13 @@ const OrganizationsContent: React.FC = () => {
                 <Typography
                     variant="body2"
                     fontWeight={600}
-                    sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
-                    onClick={() => router.push(`/organizations/${params.row._id}`)}
+                    sx={{
+                        cursor: 'pointer',
+                        '&:hover': { textDecoration: 'underline' },
+                    }}
+                    onClick={() =>
+                        router.push(`/organizations/${params.row._id}`)
+                    }
                 >
                     {params.value}
                 </Typography>
@@ -144,7 +155,9 @@ const OrganizationsContent: React.FC = () => {
             flex: 1,
             minWidth: 150,
             renderCell: (params: GridRenderCellParams) => (
-                <Typography variant="body2">{params.row?.admin?.name || 'N/A'}</Typography>
+                <Typography variant="body2">
+                    {params.row?.admin?.name || 'N/A'}
+                </Typography>
             ),
         },
         {
@@ -164,7 +177,9 @@ const OrganizationsContent: React.FC = () => {
             headerName: 'Active Seats',
             width: 130,
             renderCell: (params: GridRenderCellParams) => (
-                <Typography variant="body2">{params.row?.activeSeatCount || 0}</Typography>
+                <Typography variant="body2">
+                    {params.row?.activeSeatCount || 0}
+                </Typography>
             ),
         },
         {
@@ -172,7 +187,9 @@ const OrganizationsContent: React.FC = () => {
             headerName: 'Users',
             width: 100,
             renderCell: (params: GridRenderCellParams) => (
-                <Typography variant="body2">{params.row?.userCount || 0}</Typography>
+                <Typography variant="body2">
+                    {params.row?.userCount || 0}
+                </Typography>
             ),
         },
         {
@@ -228,7 +245,17 @@ const OrganizationsContent: React.FC = () => {
     );
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+                minHeight: 0,
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
+            }}
+        >
             <Box
                 sx={{
                     display: 'flex',
@@ -244,6 +271,7 @@ const OrganizationsContent: React.FC = () => {
                 <Button
                     variant="contained"
                     startIcon={<AddIcon />}
+                    onClick={() => router.push('/organizations/create')}
                     sx={{
                         backgroundColor: 'primary.main',
                         textTransform: 'none',
@@ -259,7 +287,7 @@ const OrganizationsContent: React.FC = () => {
                     border: '1px solid',
                     borderColor: 'divider',
                     borderRadius: 2,
-                    backgroundColor: '#fff',
+                    backgroundColor: 'background.paper',
                     flex: 1,
                     minHeight: 0,
                     display: 'flex',
@@ -269,7 +297,15 @@ const OrganizationsContent: React.FC = () => {
                     boxSizing: 'border-box',
                 }}
             >
-                <CardContent sx={{ p: 0, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                <CardContent
+                    sx={{
+                        p: 0,
+                        flex: 1,
+                        minHeight: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
                     {loading ? (
                         <OrganizationSkeletons />
                     ) : (
@@ -279,25 +315,25 @@ const OrganizationsContent: React.FC = () => {
                                 columns={columns}
                                 getRowId={(row) => row._id}
                                 rowCount={totalRows}
-                        paginationModel={paginationModel}
-                        paginationMode="server"
-                        onPaginationModelChange={setPaginationModel}
-                        pageSizeOptions={[10, 25, 50]}
-                        disableRowSelectionOnClick
-                        sx={{
-                            border: 'none',
-                            '& .MuiDataGrid-cell': {
-                                borderBottom: '1px solid',
-                                borderColor: 'divider',
-                            },
-                            '& .MuiDataGrid-columnHeaders': {
-                                backgroundColor: '#FAFAFA',
-                                borderBottom: '2px solid',
-                                borderColor: 'divider',
-                            },
-                        }}
-                        />
-                    </div>
+                                paginationModel={paginationModel}
+                                paginationMode="server"
+                                onPaginationModelChange={setPaginationModel}
+                                pageSizeOptions={[10, 25, 50]}
+                                disableRowSelectionOnClick
+                                sx={{
+                                    border: 'none',
+                                    '& .MuiDataGrid-cell': {
+                                        borderBottom: '1px solid',
+                                        borderColor: 'divider',
+                                    },
+                                    '& .MuiDataGrid-columnHeaders': {
+                                        backgroundColor: 'background.secondary',
+                                        borderBottom: '2px solid',
+                                        borderColor: 'divider',
+                                    },
+                                }}
+                            />
+                        </div>
                     )}
                 </CardContent>
             </Card>
@@ -309,7 +345,15 @@ const OrganizationsContent: React.FC = () => {
                 onClose={handleMenuClose}
             >
                 <MenuItem onClick={handleStatusUpdate}>Update Status</MenuItem>
-                <MenuItem onClick={handleMenuClose}>View Details</MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        if (selectedOrg)
+                            router.push(`/organizations/${selectedOrg._id}`);
+                        handleMenuClose();
+                    }}
+                >
+                    View Details
+                </MenuItem>
             </Menu>
 
             {/* Status Update Dialog */}
@@ -321,7 +365,13 @@ const OrganizationsContent: React.FC = () => {
             >
                 <DialogTitle>Update Organization Status</DialogTitle>
                 <DialogContent sx={{ pt: 3 }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 3,
+                        }}
+                    >
                         <FormControl fullWidth>
                             <InputLabel>Status</InputLabel>
                             <Select
@@ -331,7 +381,9 @@ const OrganizationsContent: React.FC = () => {
                             >
                                 <MenuItem value="ACTIVE">Active</MenuItem>
                                 <MenuItem value="SUSPENDED">Suspended</MenuItem>
-                                <MenuItem value="DEACTIVATED">Deactivated</MenuItem>
+                                <MenuItem value="DEACTIVATED">
+                                    Deactivated
+                                </MenuItem>
                                 <MenuItem value="TRIAL">Trial</MenuItem>
                             </Select>
                         </FormControl>

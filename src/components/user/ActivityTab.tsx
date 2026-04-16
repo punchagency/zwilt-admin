@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-    Box,
-    Typography,
-    Paper,
-} from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
 import type { SeatUser } from '@/types';
 
 interface ActivityTabProps {
@@ -13,7 +9,7 @@ interface ActivityTabProps {
 const ActivityTab: React.FC<ActivityTabProps> = ({ user }) => {
     return (
         <Box>
-            <Paper sx={{ p: 3, backgroundColor: '#fafafa' }}>
+            <Paper sx={{ p: 3, backgroundColor: 'background.secondary' }}>
                 <Typography variant="h6" fontWeight={600} gutterBottom>
                     User Activity
                 </Typography>
@@ -35,11 +31,17 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ user }) => {
                         </Typography>
                         <Typography variant="body1" fontWeight={500}>
                             {user.isOnline ? (
-                                <Box component="span" sx={{ color: 'success.main' }}>
+                                <Box
+                                    component="span"
+                                    sx={{ color: 'success.main' }}
+                                >
                                     ● Online
                                 </Box>
                             ) : (
-                                <Box component="span" sx={{ color: 'text.secondary' }}>
+                                <Box
+                                    component="span"
+                                    sx={{ color: 'text.secondary' }}
+                                >
                                     ○ Offline
                                 </Box>
                             )}
@@ -47,8 +49,13 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ user }) => {
                     </Box>
 
                     <Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                            Detailed activity logs will be available here in future updates.
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ fontStyle: 'italic' }}
+                        >
+                            Detailed activity logs will be available here in
+                            future updates.
                         </Typography>
                     </Box>
                 </Box>

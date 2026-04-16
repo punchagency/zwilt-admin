@@ -34,8 +34,8 @@ const darkMode = (theme: ICustomTheme) => ({
         background: {
             ...theme.palette.background,
             default: '#1A1A1A',
-            paper: '#2B2A2F',
-            secondary: '#343434',
+            paper: '#242427',
+            secondary: '#1E1E21',
         },
         text: {
             ...theme.palette.text,
@@ -101,7 +101,8 @@ const darkMode = (theme: ICustomTheme) => ({
         },
         skeleton: {
             bg: 'rgba(255, 255, 255, 0.18)',
-            bgGradient: 'linear-gradient(90deg, rgba(255, 255, 255, 0.0), rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.0))',
+            bgGradient:
+                'linear-gradient(90deg, rgba(255, 255, 255, 0.0), rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.0))',
         },
     },
     shadows: [
@@ -113,6 +114,25 @@ const darkMode = (theme: ICustomTheme) => ({
         '0 25px 50px -12px rgba(0, 0, 0, 0.6)',
         ...Array(19).fill('none'),
     ],
+    components: {
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: '#1E1E21',
+                    '&.Mui-focused': {
+                        backgroundColor: '#1A1A1D',
+                    },
+                },
+            },
+        },
+        MuiAppBar: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: '#2B2A2F',
+                },
+            },
+        },
+    },
 });
 
 export default darkMode;

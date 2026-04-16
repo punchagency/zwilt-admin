@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-    Box,
-    Card,
-    CardContent,
-    Typography,
-    Stack,
-} from '@mui/material';
+import { Box, Card, CardContent, Typography, Stack } from '@mui/material';
 
 interface StatItem {
     label: string;
@@ -33,9 +27,9 @@ const StatCard: React.FC<StatCardProps> = ({
             sx={{
                 height: '100%',
                 border: '1.2px solid',
-                borderColor: '#0000001A',
+                borderColor: 'divider',
                 borderRadius: 2,
-                backgroundColor: '#fff',
+                backgroundColor: 'background.paper',
             }}
         >
             <CardContent>
@@ -69,7 +63,12 @@ const StatCard: React.FC<StatCardProps> = ({
                 </Typography>
 
                 {items.length > 0 && (
-                    <Stack direction="row" spacing={3} flexWrap="wrap" useFlexGap>
+                    <Stack
+                        direction="row"
+                        spacing={3}
+                        flexWrap="wrap"
+                        useFlexGap
+                    >
                         {items.map((item, index) => (
                             <Box
                                 key={index}

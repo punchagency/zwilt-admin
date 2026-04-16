@@ -64,9 +64,12 @@ const UsersTab: React.FC<UsersTabProps> = ({ organizationId }) => {
             minWidth: 250,
             renderCell: (params: GridRenderCellParams) => {
                 const user = params.row as SeatUser;
-                const initials = user.firstName?.charAt(0) || user.name?.charAt(0) || 'U';
+                const initials =
+                    user.firstName?.charAt(0) || user.name?.charAt(0) || 'U';
                 return (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box
+                        sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}
+                    >
                         <Avatar
                             sx={{
                                 width: 36,
@@ -79,9 +82,15 @@ const UsersTab: React.FC<UsersTabProps> = ({ organizationId }) => {
                         </Avatar>
                         <Box>
                             <Typography variant="body2" fontWeight={600}>
-                                {user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim()}
+                                {user.name ||
+                                    `${user.firstName || ''} ${
+                                        user.lastName || ''
+                                    }`.trim()}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                            >
                                 {user.email}
                             </Typography>
                         </Box>
@@ -94,7 +103,10 @@ const UsersTab: React.FC<UsersTabProps> = ({ organizationId }) => {
             headerName: 'Account Type',
             width: 150,
             renderCell: (params: GridRenderCellParams) => (
-                <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                <Typography
+                    variant="body2"
+                    sx={{ textTransform: 'capitalize' }}
+                >
                     {params.value?.toLowerCase() || 'N/A'}
                 </Typography>
             ),
@@ -116,7 +128,10 @@ const UsersTab: React.FC<UsersTabProps> = ({ organizationId }) => {
             renderCell: (params: GridRenderCellParams) => (
                 <Chip
                     label={params.value}
-                    color={seatStatusColors[params.value as SeatStatus] || 'default'}
+                    color={
+                        seatStatusColors[params.value as SeatStatus] ||
+                        'default'
+                    }
                     size="small"
                 />
             ),
@@ -149,7 +164,13 @@ const UsersTab: React.FC<UsersTabProps> = ({ organizationId }) => {
     ];
 
     return (
-        <Card sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+        <Card
+            sx={{
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+            }}
+        >
             <CardContent sx={{ p: 0 }}>
                 <DataGrid
                     rows={users}
@@ -170,7 +191,7 @@ const UsersTab: React.FC<UsersTabProps> = ({ organizationId }) => {
                             borderColor: 'divider',
                         },
                         '& .MuiDataGrid-columnHeaders': {
-                            backgroundColor: '#FAFAFA',
+                            backgroundColor: 'background.secondary',
                             borderBottom: '2px solid',
                             borderColor: 'divider',
                         },

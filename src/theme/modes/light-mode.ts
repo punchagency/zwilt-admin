@@ -101,7 +101,8 @@ const lightMode = (theme: ICustomTheme) => ({
         },
         skeleton: {
             bg: 'rgba(43, 42, 47, 0.22)',
-            bgGradient: 'linear-gradient(90deg, rgba(255, 255, 255, 0.0), rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.0))',
+            bgGradient:
+                'linear-gradient(90deg, rgba(255, 255, 255, 0.0), rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.0))',
         },
     },
     shadows: [
@@ -113,6 +114,18 @@ const lightMode = (theme: ICustomTheme) => ({
         '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         ...Array(19).fill('none'),
     ],
+    components: {
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: '#FFFFFF',
+                    '&.Mui-focused': {
+                        backgroundColor: '#FFFFFF',
+                    },
+                },
+            },
+        },
+    },
 });
 
 export default lightMode;

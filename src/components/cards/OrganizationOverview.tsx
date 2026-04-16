@@ -53,9 +53,9 @@ const OrganizationOverview: React.FC<OrganizationOverviewProps> = ({
             sx={{
                 height: '100%',
                 border: '1.2px solid',
-                borderColor: '#0000001A',
+                borderColor: 'divider',
                 borderRadius: 2,
-                backgroundColor: '#fff',
+                backgroundColor: 'background.paper',
             }}
         >
             <CardContent>
@@ -70,7 +70,7 @@ const OrganizationOverview: React.FC<OrganizationOverviewProps> = ({
                     <Typography variant="h6" fontWeight={600}>
                         Organization Overview
                     </Typography>
-                    <Button
+                    {/* <Button
                         variant="contained"
                         size="small"
                         startIcon={<AddIcon />}
@@ -81,13 +81,17 @@ const OrganizationOverview: React.FC<OrganizationOverviewProps> = ({
                         }}
                     >
                         Create
-                    </Button>
+                    </Button> */}
                 </Box>
 
                 {loading ? (
                     <OrganizationSkeletons />
                 ) : topOrgs.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ py: 4, textAlign: 'center' }}
+                    >
                         No organizations found
                     </Typography>
                 ) : (
@@ -120,8 +124,8 @@ const OrganizationOverview: React.FC<OrganizationOverviewProps> = ({
                                                 color="text.secondary"
                                                 sx={{ mt: 0.5 }}
                                             >
-                                                {org.projectCount || 0} Projects •{' '}
-                                                {org.userCount || 0} Users
+                                                {org.projectCount || 0} Projects
+                                                • {org.userCount || 0} Users
                                             </Typography>
                                         }
                                     />

@@ -79,7 +79,12 @@ const UsersContent: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [paginationModel.page, paginationModel.pageSize, search, accountTypeFilter]);
+    }, [
+        paginationModel.page,
+        paginationModel.pageSize,
+        search,
+        accountTypeFilter,
+    ]);
 
     useEffect(() => {
         fetchUsers();
@@ -146,9 +151,12 @@ const UsersContent: React.FC = () => {
             minWidth: 250,
             renderCell: (params: GridRenderCellParams) => {
                 const user = params.row as SeatUser;
-                const initials = user.firstName?.charAt(0) || user.name?.charAt(0) || 'U';
+                const initials =
+                    user.firstName?.charAt(0) || user.name?.charAt(0) || 'U';
                 return (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box
+                        sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}
+                    >
                         <Avatar
                             sx={{
                                 width: 36,
@@ -161,9 +169,15 @@ const UsersContent: React.FC = () => {
                         </Avatar>
                         <Box>
                             <Typography variant="body2" fontWeight={600}>
-                                {user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim()}
+                                {user.name ||
+                                    `${user.firstName || ''} ${
+                                        user.lastName || ''
+                                    }`.trim()}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                            >
                                 {user.email}
                             </Typography>
                         </Box>
@@ -180,7 +194,9 @@ const UsersContent: React.FC = () => {
                     label={params.value}
                     size="small"
                     sx={{
-                        backgroundColor: accountTypeColors[params.value as AccountType] || '#9E9E9E',
+                        backgroundColor:
+                            accountTypeColors[params.value as AccountType] ||
+                            'text.disabled',
                         color: '#fff',
                         fontWeight: 600,
                         fontSize: '0.75rem',
@@ -206,7 +222,10 @@ const UsersContent: React.FC = () => {
             renderCell: (params: GridRenderCellParams) => (
                 <Chip
                     label={params.value}
-                    color={seatStatusColors[params.value as SeatStatus] || 'default'}
+                    color={
+                        seatStatusColors[params.value as SeatStatus] ||
+                        'default'
+                    }
                     size="small"
                 />
             ),
@@ -230,15 +249,21 @@ const UsersContent: React.FC = () => {
             width: 150,
             renderCell: (params: GridRenderCellParams) => (
                 <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    {params.row?.appAccess?.slice(0, 2).map((app: string) => (
-                        <Chip
-                            key={app}
-                            label={app}
-                            size="small"
-                            variant="outlined"
-                            sx={{ fontSize: '0.7rem', height: 20 }}
-                        />
-                    )) || <Typography variant="caption" color="text.secondary">None</Typography>}
+                    {params.row?.appAccess
+                        ?.slice(0, 2)
+                        .map((app: string) => (
+                            <Chip
+                                key={app}
+                                label={app}
+                                size="small"
+                                variant="outlined"
+                                sx={{ fontSize: '0.7rem', height: 20 }}
+                            />
+                        )) || (
+                        <Typography variant="caption" color="text.secondary">
+                            None
+                        </Typography>
+                    )}
                 </Box>
             ),
         },
@@ -271,7 +296,17 @@ const UsersContent: React.FC = () => {
     ];
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+                minHeight: 0,
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
+            }}
+        >
             <Box
                 sx={{
                     display: 'flex',
@@ -311,7 +346,9 @@ const UsersContent: React.FC = () => {
                             <MenuItem value="MEMBER">Member</MenuItem>
                             <MenuItem value="ADMIN">Admin</MenuItem>
                             <MenuItem value="SUPER_ADMIN">Super Admin</MenuItem>
-                            <MenuItem value="SUPPORT_ADMIN">Support Admin</MenuItem>
+                            <MenuItem value="SUPPORT_ADMIN">
+                                Support Admin
+                            </MenuItem>
                             <MenuItem value="AUDIT_ADMIN">Audit Admin</MenuItem>
                             <MenuItem value="GUEST">Guest</MenuItem>
                             <MenuItem value="CONTACT">Contact</MenuItem>
@@ -325,14 +362,22 @@ const UsersContent: React.FC = () => {
                     border: '1px solid',
                     borderColor: 'divider',
                     borderRadius: 2,
-                    backgroundColor: '#fff',
+                    backgroundColor: 'background.paper',
                     flex: 1,
                     minHeight: 0,
                     display: 'flex',
                     flexDirection: 'column',
                 }}
             >
-                <CardContent sx={{ p: 0, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                <CardContent
+                    sx={{
+                        p: 0,
+                        flex: 1,
+                        minHeight: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
                     {loading ? (
                         <UserSkeletons />
                     ) : (
@@ -347,7 +392,9 @@ const UsersContent: React.FC = () => {
                                 onPaginationModelChange={setPaginationModel}
                                 pageSizeOptions={[25, 50, 100]}
                                 disableRowSelectionOnClick
-                                onRowClick={(params) => router.push(`/users/${params.row._id}`)}
+                                onRowClick={(params) =>
+                                    router.push(`/users/${params.row._id}`)
+                                }
                                 sx={{
                                     border: 'none',
                                     '& .MuiDataGrid-cell': {
@@ -359,13 +406,13 @@ const UsersContent: React.FC = () => {
                                         backgroundColor: 'action.hover',
                                     },
                                     '& .MuiDataGrid-columnHeaders': {
-                                        backgroundColor: '#FAFAFA',
+                                        backgroundColor: 'background.secondary',
                                         borderBottom: '2px solid',
                                         borderColor: 'divider',
                                     },
                                 }}
                             />
-                    </div>
+                        </div>
                     )}
                 </CardContent>
             </Card>
@@ -376,12 +423,16 @@ const UsersContent: React.FC = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
             >
-                <MenuItem onClick={() => {
-                    if (selectedUser) {
-                        router.push(`/users/${selectedUser._id}`);
-                    }
-                    handleMenuClose();
-                }}>View Details</MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        if (selectedUser) {
+                            router.push(`/users/${selectedUser._id}`);
+                        }
+                        handleMenuClose();
+                    }}
+                >
+                    View Details
+                </MenuItem>
                 <MenuItem onClick={handleMenuClose}>Suspend Seat</MenuItem>
                 <MenuItem onClick={handleMenuClose}>Reactivate Seat</MenuItem>
             </Menu>

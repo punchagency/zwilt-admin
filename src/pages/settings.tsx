@@ -74,15 +74,28 @@ const SettingsPage: React.FC = () => {
         setPricingError('');
     };
 
-    const tierConfigs: Array<{ key: keyof SeatPricing; label: string; description: string; premium?: boolean }> = [
-        { key: 'recruitStandard', label: 'Recruit Standard', description: 'Standard features for Recruit' },
+    const tierConfigs: Array<{
+        key: keyof SeatPricing;
+        label: string;
+        description: string;
+        premium?: boolean;
+    }> = [
+        {
+            key: 'recruitStandard',
+            label: 'Recruit Standard',
+            description: 'Standard features for Recruit',
+        },
         {
             key: 'recruitPremium',
             label: 'Recruit Premium',
             description: 'Premium features for Recruit',
             premium: true,
         },
-        { key: 'trackerStandard', label: 'Tracker Standard', description: 'Standard features for Tracker' },
+        {
+            key: 'trackerStandard',
+            label: 'Tracker Standard',
+            description: 'Standard features for Tracker',
+        },
         {
             key: 'trackerPremium',
             label: 'Tracker Premium',
@@ -102,25 +115,48 @@ const SettingsPage: React.FC = () => {
                 </Typography>
             </Box>
 
-            <Paper sx={{ p: 3, border: '1.2px solid', borderColor: '#0000001A', borderRadius: 2 }}>
+            <Paper
+                sx={{
+                    p: 3,
+                    border: '1.2px solid',
+                    borderColor: 'divider',
+                    borderRadius: 2,
+                }}
+            >
                 <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
                     Seat Pricing
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    Monthly price per seat for each subscription tier. Changes apply to new subscriptions immediately.
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 3 }}
+                >
+                    Monthly price per seat for each subscription tier. Changes
+                    apply to new subscriptions immediately.
                 </Typography>
 
                 {pricingSuccess && (
-                    <Alert severity="success" sx={{ mb: 2 }}>Seat pricing updated successfully</Alert>
+                    <Alert severity="success" sx={{ mb: 2 }}>
+                        Seat pricing updated successfully
+                    </Alert>
                 )}
                 {pricingError && (
-                    <Alert severity="error" sx={{ mb: 2 }}>{pricingError}</Alert>
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {pricingError}
+                    </Alert>
                 )}
 
                 <Grid container spacing={3} sx={{ mb: 3 }}>
                     {tierConfigs.map((tier) => (
                         <Grid item xs={12} sm={6} md={3} key={tier.key}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.5,
+                                    mb: 0.5,
+                                }}
+                            >
                                 <Typography variant="body2" fontWeight={600}>
                                     {tier.label}
                                 </Typography>
@@ -128,38 +164,81 @@ const SettingsPage: React.FC = () => {
                                     <Tooltip
                                         title={
                                             <Box sx={{ fontSize: '0.75rem' }}>
-                                                <Typography variant="caption" fontWeight={600} display="block" sx={{ mb: 0.5 }}>
-                                                    Premium seats are assigned to users with:
+                                                <Typography
+                                                    variant="caption"
+                                                    fontWeight={600}
+                                                    display="block"
+                                                    sx={{ mb: 0.5 }}
+                                                >
+                                                    Premium seats are assigned
+                                                    to users with:
                                                 </Typography>
-                                                <Typography variant="caption" component="span" sx={{ fontFamily: 'monospace' }}>
-                                                    Recruit: ADMIN, MANAGER, OWNER
+                                                <Typography
+                                                    variant="caption"
+                                                    component="span"
+                                                    sx={{
+                                                        fontFamily: 'monospace',
+                                                    }}
+                                                >
+                                                    Recruit: ADMIN, MANAGER,
+                                                    OWNER
                                                 </Typography>
                                                 <br />
-                                                <Typography variant="caption" component="span" sx={{ fontFamily: 'monospace' }}>
-                                                    Tracker: ORGANIZATION_OWNER, ORGANIZATION_MANAGER
+                                                <Typography
+                                                    variant="caption"
+                                                    component="span"
+                                                    sx={{
+                                                        fontFamily: 'monospace',
+                                                    }}
+                                                >
+                                                    Tracker: ORGANIZATION_OWNER,
+                                                    ORGANIZATION_MANAGER
                                                 </Typography>
                                             </Box>
                                         }
                                         arrow
                                         placement="top"
                                     >
-                                        <InfoOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+                                        <InfoOutlinedIcon
+                                            sx={{
+                                                fontSize: 14,
+                                                color: 'text.secondary',
+                                            }}
+                                        />
                                     </Tooltip>
                                 )}
                             </Box>
-                            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                display="block"
+                                sx={{ mb: 2 }}
+                            >
                                 {tier.description}
                             </Typography>
                             {pricingLoading ? (
-                                <Skeleton variant="text" width={80} height={40} />
+                                <Skeleton
+                                    variant="text"
+                                    width={80}
+                                    height={40}
+                                />
                             ) : (
                                 <TextField
                                     fullWidth
                                     type="number"
                                     value={pricing[tier.key]}
-                                    onChange={(e) => updatePrice(tier.key, Number(e.target.value))}
+                                    onChange={(e) =>
+                                        updatePrice(
+                                            tier.key,
+                                            Number(e.target.value),
+                                        )
+                                    }
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                $
+                                            </InputAdornment>
+                                        ),
                                     }}
                                     size="small"
                                 />
@@ -168,16 +247,44 @@ const SettingsPage: React.FC = () => {
                     ))}
                 </Grid>
 
-                <Box sx={{ p: 2, backgroundColor: '#F8F9FA', borderRadius: 1, mb: 3 }}>
-                    <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
+                <Box
+                    sx={{
+                        p: 2,
+                        backgroundColor: 'background.secondary',
+                        borderRadius: 1,
+                        mb: 3,
+                    }}
+                >
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        display="block"
+                        sx={{ mb: 0.5 }}
+                    >
                         Estimated Revenue Per Org (Average)
                     </Typography>
                     {!pricingLoading && (
-                        <Typography variant="h6" fontWeight={700} sx={{ color: '#2B2A2F' }}>
-                            ${Math.round(
-                                (pricing.recruitStandard + pricing.recruitPremium + pricing.trackerStandard + pricing.trackerPremium) / 4
+                        <Typography
+                            variant="h6"
+                            fontWeight={700}
+                            sx={{ color: 'text.primary' }}
+                        >
+                            $
+                            {Math.round(
+                                (pricing.recruitStandard +
+                                    pricing.recruitPremium +
+                                    pricing.trackerStandard +
+                                    pricing.trackerPremium) /
+                                    4,
                             )}
-                            <Typography component="span" variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>/seat/mo</Typography>
+                            <Typography
+                                component="span"
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ ml: 0.5 }}
+                            >
+                                /seat/mo
+                            </Typography>
                         </Typography>
                     )}
                 </Box>

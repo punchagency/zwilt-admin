@@ -41,7 +41,14 @@ const AdminConfirmDialog: React.FC<AdminConfirmDialogProps> = ({
 }) => {
     return (
         <Dialog open={open} onClose={onCancel} maxWidth="sm" fullWidth>
-            <DialogTitle sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <DialogTitle
+                sx={{
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                }}
+            >
                 {actionType === 'delete' && <WarningIcon color="error" />}
                 {title}
             </DialogTitle>
@@ -53,7 +60,7 @@ const AdminConfirmDialog: React.FC<AdminConfirmDialogProps> = ({
                 <Box
                     sx={{
                         p: 2,
-                        backgroundColor: '#F8F9FA',
+                        backgroundColor: 'background.secondary',
                         borderRadius: 2,
                         mb: 2,
                     }}
@@ -73,10 +80,14 @@ const AdminConfirmDialog: React.FC<AdminConfirmDialogProps> = ({
                     rows={3}
                     value={reason}
                     onChange={(e) => onReasonChange(e.target.value)}
-                    placeholder={`Why is this admin being ${actionType === 'suspend' ? 'suspended' : 'deleted'}?`}
+                    placeholder={`Why is this admin being ${
+                        actionType === 'suspend' ? 'suspended' : 'deleted'
+                    }?`}
                     required
                     error={!reason.trim() && loading}
-                    helperText={!reason.trim() && loading ? 'Reason is required' : ''}
+                    helperText={
+                        !reason.trim() && loading ? 'Reason is required' : ''
+                    }
                 />
 
                 {error && (
@@ -97,8 +108,14 @@ const AdminConfirmDialog: React.FC<AdminConfirmDialogProps> = ({
                     sx={{ textTransform: 'none', borderRadius: 2 }}
                 >
                     {loading
-                        ? `${actionType === 'suspend' ? 'Suspending' : 'Deleting'}...`
-                        : `${actionType === 'suspend' ? 'Suspend' : 'Delete'} Admin`}
+                        ? `${
+                              actionType === 'suspend'
+                                  ? 'Suspending'
+                                  : 'Deleting'
+                          }...`
+                        : `${
+                              actionType === 'suspend' ? 'Suspend' : 'Delete'
+                          } Admin`}
                 </Button>
             </DialogActions>
         </Dialog>

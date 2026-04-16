@@ -160,10 +160,12 @@ const customTheme: ICustomTheme = {
             styleOverrides: {
                 root: {
                     borderRadius: 12,
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)',
+                    boxShadow:
+                        '0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)',
                     transition: 'box-shadow 0.2s ease-in-out',
                     '&:hover': {
-                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                        boxShadow:
+                            '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                     },
                 },
             },
@@ -177,13 +179,16 @@ const customTheme: ICustomTheme = {
                     backgroundImage: 'none',
                 },
                 elevation1: {
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)',
+                    boxShadow:
+                        '0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)',
                 },
                 elevation2: {
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                    boxShadow:
+                        '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                 },
                 elevation3: {
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    boxShadow:
+                        '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                 },
             },
         },
@@ -195,7 +200,7 @@ const customTheme: ICustomTheme = {
             styleOverrides: {
                 root: {
                     '& .MuiOutlinedInput-root': {
-                        borderRadius: 8,
+                        borderRadius: 15,
                         transition: 'all 0.2s ease-in-out',
                         '&:hover': {
                             borderColor: 'rgba(80, 88, 159, 0.5)',
@@ -207,11 +212,10 @@ const customTheme: ICustomTheme = {
         MuiOutlinedInput: {
             styleOverrides: {
                 root: {
-                    borderRadius: 8,
-                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                    '&.Mui-focused': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    },
+                    borderRadius: 15,
+                },
+                input: {
+                    padding: '14px 16px',
                 },
                 notchedOutline: {
                     transition: 'all 0.2s ease-in-out',

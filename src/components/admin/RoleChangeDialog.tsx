@@ -53,7 +53,8 @@ const RoleChangeDialog: React.FC<RoleChangeDialogProps> = ({
                         Changing role for <strong>{adminName}</strong>
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Current role: <strong>{currentRole.replace('_', ' ')}</strong>
+                        Current role:{' '}
+                        <strong>{currentRole.replace('_', ' ')}</strong>
                     </Typography>
                 </Box>
 
@@ -62,13 +63,21 @@ const RoleChangeDialog: React.FC<RoleChangeDialogProps> = ({
                     select
                     label="New Role"
                     value={newRole}
-                    onChange={(e) => onNewRoleChange(e.target.value as AdminRole)}
+                    onChange={(e) =>
+                        onNewRoleChange(e.target.value as AdminRole)
+                    }
                     sx={{ mb: 3 }}
                     required
                 >
                     {ADMIN_ROLES_CONFIG.map((role) => (
                         <MenuItem key={role.role} value={role.role}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                }}
+                            >
                                 <Box
                                     sx={{
                                         width: 12,
@@ -87,29 +96,44 @@ const RoleChangeDialog: React.FC<RoleChangeDialogProps> = ({
                     <Box
                         sx={{
                             p: 2,
-                            backgroundColor: '#F8F9FA',
+                            backgroundColor: 'background.secondary',
                             borderRadius: 2,
                             mb: 2,
                         }}
                     >
-                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            display="block"
+                            sx={{ mb: 1 }}
+                        >
                             Role Description
                         </Typography>
-                        <Typography variant="body2">{roleConfig.description}</Typography>
-                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1, mb: 0.5 }}>
+                        <Typography variant="body2">
+                            {roleConfig.description}
+                        </Typography>
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            display="block"
+                            sx={{ mt: 1, mb: 0.5 }}
+                        >
                             Permissions ({roleConfig.permissions.length}):
                         </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        <Box
+                            sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}
+                        >
                             {roleConfig.permissions.map((perm) => (
                                 <Typography
                                     key={perm}
                                     variant="caption"
                                     sx={{
-                                        backgroundColor: '#fff',
+                                        backgroundColor: 'background.paper',
                                         px: 1,
                                         py: 0.25,
                                         borderRadius: 1,
-                                        border: '1px solid #E0E0E9',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
                                     }}
                                 >
                                     {perm.replace(/_/g, ' ')}
@@ -129,7 +153,9 @@ const RoleChangeDialog: React.FC<RoleChangeDialogProps> = ({
                     placeholder="Explain why this role change is necessary..."
                     required
                     error={!reason.trim() && loading}
-                    helperText={!reason.trim() && loading ? 'Reason is required' : ''}
+                    helperText={
+                        !reason.trim() && loading ? 'Reason is required' : ''
+                    }
                 />
 
                 {error && (

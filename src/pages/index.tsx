@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Typography, Button, Skeleton, Card, CardContent } from '@mui/material';
+import { useRouter } from 'next/router';
+import {
+    Box,
+    Grid,
+    Typography,
+    Button,
+    Skeleton,
+    Card,
+    CardContent,
+} from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import PeopleIcon from '@mui/icons-material/People';
@@ -15,7 +24,7 @@ const StatCardSkeleton = () => (
         sx={{
             height: '100%',
             border: '1.2px solid',
-            borderColor: '#0000001A',
+            borderColor: 'divider',
             borderRadius: 2,
         }}
     >
@@ -29,6 +38,7 @@ const StatCardSkeleton = () => (
 );
 
 const OverviewContent: React.FC = () => {
+    const router = useRouter();
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [loading, setLoading] = useState(true);
@@ -82,6 +92,7 @@ const OverviewContent: React.FC = () => {
                 <Button
                     variant="contained"
                     size="large"
+                    onClick={() => router.push('/organizations/create')}
                     sx={{
                         backgroundColor: 'primary.main',
                         textTransform: 'none',
@@ -106,13 +117,14 @@ const OverviewContent: React.FC = () => {
                                 {
                                     label: 'Active',
                                     value: stats?.organizations.active || 0,
-                                    color: '#4CAF50',
+                                    color: 'success.main',
                                 },
                                 {
                                     label: 'Inactive',
-                                    value: (stats?.organizations.total || 0) -
-                                          (stats?.organizations.active || 0),
-                                    color: '#9E9E9E',
+                                    value:
+                                        (stats?.organizations.total || 0) -
+                                        (stats?.organizations.active || 0),
+                                    color: 'text.disabled',
                                 },
                             ]}
                             icon={<BusinessIcon />}
@@ -130,17 +142,17 @@ const OverviewContent: React.FC = () => {
                                 {
                                     label: 'Active',
                                     value: stats?.projects?.active ?? 0,
-                                    color: '#4CAF50',
+                                    color: 'success.main',
                                 },
                                 {
                                     label: 'Archived',
                                     value: stats?.projects?.archived ?? 0,
-                                    color: '#FF9800',
+                                    color: 'warning.main',
                                 },
                                 {
                                     label: 'Deleted',
                                     value: stats?.projects?.deleted ?? 0,
-                                    color: '#F44336',
+                                    color: 'error.main',
                                 },
                             ]}
                             icon={<AssignmentIcon />}
@@ -158,13 +170,14 @@ const OverviewContent: React.FC = () => {
                                 {
                                     label: 'Admins',
                                     value: stats?.users.admins || 0,
-                                    color: '#50589F',
+                                    color: 'primary.main',
                                 },
                                 {
                                     label: 'Regular Users',
-                                    value: (stats?.users.total || 0) -
-                                          (stats?.users.admins || 0),
-                                    color: '#9E9E9E',
+                                    value:
+                                        (stats?.users.total || 0) -
+                                        (stats?.users.admins || 0),
+                                    color: 'text.disabled',
                                 },
                             ]}
                             icon={<PeopleIcon />}
@@ -179,7 +192,10 @@ const OverviewContent: React.FC = () => {
                     <ProjectTrend />
                 </Grid>
                 <Grid item xs={12} lg={4}>
-                    <OrganizationOverview organizations={organizations} loading={loading} />
+                    <OrganizationOverview
+                        organizations={organizations}
+                        loading={loading}
+                    />
                 </Grid>
             </Grid>
         </Box>

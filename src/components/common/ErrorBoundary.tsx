@@ -28,7 +28,10 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error('[ErrorBoundary] Uncaught error:', error);
-        console.error('[ErrorBoundary] Component stack:', errorInfo.componentStack);
+        console.error(
+            '[ErrorBoundary] Component stack:',
+            errorInfo.componentStack,
+        );
     }
 
     render() {
@@ -40,7 +43,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: '#F8F9FA',
+                        backgroundColor: 'background.default',
                         padding: 2,
                     }}
                 >
@@ -50,14 +53,18 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                             maxWidth: 500,
                             textAlign: 'center',
                             border: '1.2px solid',
-                            borderColor: '#0000001A',
+                            borderColor: 'divider',
                             borderRadius: 3,
                         }}
                     >
                         <ErrorOutlineIcon
-                            sx={{ fontSize: 64, color: '#D32F2F', mb: 2 }}
+                            sx={{ fontSize: 64, color: 'error.main', mb: 2 }}
                         />
-                        <Typography variant="h4" fontWeight={700} sx={{ mb: 1 }}>
+                        <Typography
+                            variant="h4"
+                            fontWeight={700}
+                            sx={{ mb: 1 }}
+                        >
                             Something went wrong
                         </Typography>
                         <Typography
@@ -74,7 +81,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                                 sx={{
                                     mb: 3,
                                     p: 2,
-                                    backgroundColor: '#F8F9FA',
+                                    backgroundColor: 'background.secondary',
                                     borderRadius: 1,
                                     fontFamily: 'monospace',
                                     fontSize: '0.8125rem',
@@ -90,7 +97,11 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                             variant="contained"
                             size="large"
                             href="/"
-                            sx={{ textTransform: 'none', borderRadius: 2, px: 4 }}
+                            sx={{
+                                textTransform: 'none',
+                                borderRadius: 2,
+                                px: 4,
+                            }}
                         >
                             Go Home
                         </Button>
