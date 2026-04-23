@@ -24,6 +24,7 @@ import { showSuccess, showError } from '@/utils/toast';
 import OverviewTab from '@/components/organization/OverviewTab';
 import UsersTab from '@/components/organization/UsersTab';
 import BillingTab from '@/components/organization/BillingTab';
+import UsageTab from '@/components/organization/UsageTab';
 import ConfirmActionDialog from '@/components/organization/ConfirmActionDialog';
 
 const statusColors: Record<
@@ -281,6 +282,7 @@ const OrganizationDetail: React.FC = () => {
                 <Tab label="Overview" />
                 <Tab label={`Users (${org.userCount || 0})`} />
                 <Tab label="Billing" />
+                <Tab label="Usage" />
             </Tabs>
 
             {/* Tab Content */}
@@ -292,6 +294,9 @@ const OrganizationDetail: React.FC = () => {
             </TabPanel>
             <TabPanel value={activeTab} index={2}>
                 <BillingTab organization={org} />
+            </TabPanel>
+            <TabPanel value={activeTab} index={3}>
+                <UsageTab organizationId={org._id} />
             </TabPanel>
 
             {/* Confirm Action Dialog */}

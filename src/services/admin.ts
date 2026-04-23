@@ -23,6 +23,8 @@ import type {
     PlanDistribution,
     TopOrg,
     SeatPricing,
+    SeatPricingResponse,
+    ManagedApplication,
 } from '@/types';
 
 export const getAdminStats = async (): Promise<ApiResponse<AdminStats>> => {
@@ -316,7 +318,9 @@ export const getTopOrgs = async (): Promise<ApiResponse<TopOrg[]>> => {
     return response.data;
 };
 
-export const getSeatPricing = async (): Promise<ApiResponse<SeatPricing>> => {
+export const getSeatPricing = async (): Promise<
+    ApiResponse<SeatPricingResponse>
+> => {
     const response = await api.get('/api/admin/earnings/pricing');
     return response.data;
 };
@@ -325,5 +329,39 @@ export const updateSeatPricing = async (
     data: Partial<SeatPricing>,
 ): Promise<ApiResponse<SeatPricing>> => {
     const response = await api.patch('/api/admin/earnings/pricing', data);
+    return response.data;
+};
+
+export const createManagedApp = async (
+    data: any,
+): Promise<ApiResponse<ManagedApplication>> => {
+    const response = await api.post('/api/admin/earnings/apps', data);
+    return response.data;
+};
+
+export const updateManagedApp = async (
+    id: string,
+    data: any,
+): Promise<ApiResponse<ManagedApplication>> => {
+    const response = await api.patch(`/api/admin/earnings/apps/${id}`, data);
+    return response.data;
+};
+export const getUsageReport = async (filters: {
+    organizationId?: string;
+    startDate?: string;
+    endDate?: string;
+    operationType?: string;
+    page?: number;
+    limit?: number;
+}): Promise<
+    ApiResponse<{
+        summary: Array<{ _id: string; totalCredits: number; count: number }>;
+        history: any[];
+        pagination: { total: number; page: number; totalPages: number };
+    }>
+> => {
+    const response = await api.get('/api/admin/usage/report', {
+        params: filters,
+    });
     return response.data;
 };
