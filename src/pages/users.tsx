@@ -55,9 +55,19 @@ const UsersContent: React.FC = () => {
     });
     const [totalRows, setTotalRows] = useState(0);
     const [search, setSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [accountTypeFilter, setAccountTypeFilter] = useState('');
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedUser, setSelectedUser] = useState<SeatUser | null>(null);
+
+    // Debounce search input — reset to page 0 when search changes
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPaginationModel((prev) => ({ ...prev, page: 0 }));
+        }, 800);
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const fetchUsers = useCallback(async () => {
         try {
@@ -65,7 +75,7 @@ const UsersContent: React.FC = () => {
             const response = await getUsers(
                 paginationModel.page + 1,
                 paginationModel.pageSize,
-                search || undefined,
+                debouncedSearch || undefined,
                 accountTypeFilter || undefined,
             );
             if (response.success) {
@@ -82,7 +92,7 @@ const UsersContent: React.FC = () => {
     }, [
         paginationModel.page,
         paginationModel.pageSize,
-        search,
+        debouncedSearch,
         accountTypeFilter,
     ]);
 
@@ -400,10 +410,12 @@ const UsersContent: React.FC = () => {
                                     '& .MuiDataGrid-cell': {
                                         borderBottom: '1px solid',
                                         borderColor: 'divider',
-                                        cursor: 'pointer',
                                     },
-                                    '& .MuiDataGrid-row:hover': {
-                                        backgroundColor: 'action.hover',
+                                    '& .MuiDataGrid-row': {
+                                        cursor: 'pointer',
+                                        '&:hover': {
+                                            backgroundColor: 'action.hover',
+                                        },
                                     },
                                     '& .MuiDataGrid-columnHeaders': {
                                         backgroundColor: 'background.secondary',

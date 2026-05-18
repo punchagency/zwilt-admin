@@ -25,6 +25,7 @@ import type {
     SeatPricing,
     SeatPricingResponse,
     ManagedApplication,
+    CreateOrganizationPayload,
 } from '@/types';
 
 export const getAdminStats = async (): Promise<ApiResponse<AdminStats>> => {
@@ -78,7 +79,7 @@ export const deleteOrganization = async (
 };
 
 export const createOrganization = async (
-    data: any,
+    data: CreateOrganizationPayload,
 ): Promise<ApiResponse<Organization>> => {
     const response = await api.post('/api/admin/organizations', data);
     return response.data;

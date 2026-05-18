@@ -53,53 +53,40 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
 
     const roleConfig = ADMIN_ROLES_CONFIG.find((r) => r.role === role);
 
-    // Fetch users when dialog opens
+    // Reset state when dialog closes
     useEffect(() => {
         if (!open) {
             setSearch('');
+            setUsers([]);
             setSelectedUser(null);
+        }
+    }, [open]);
+
+    // Debounced search
+    useEffect(() => {
+        if (!open || !search.trim()) {
+            setUsers([]);
             return;
         }
 
-        const fetchUsers = async () => {
+        const timer = setTimeout(async () => {
             setUserLoading(true);
             try {
-                const res = await getUsers(
-                    1,
-                    100,
-                    undefined,
-                    undefined,
-                    undefined,
-                );
+                const res = await getUsers(1, 25, search.trim());
                 if (res.success) {
-                    // Filter out existing admins
-                    const nonAdmins = res.data.users.filter(
-                        (u) =>
-                            ![
-                                'ADMIN',
-                                'SUPER_ADMIN',
-                                'SUPPORT_ADMIN',
-                                'AUDIT_ADMIN',
-                            ].includes(u.accountType),
-                    );
-                    setUsers(nonAdmins);
+                    setUsers(res.data.users);
                 }
             } catch {
-                // Silently fail
+                // silently fail
             } finally {
                 setUserLoading(false);
             }
-        };
+        }, 800);
 
-        fetchUsers();
-    }, [open]);
+        return () => clearTimeout(timer);
+    }, [search, open]);
 
-    // Filter users by search
-    const filteredUsers = users.filter(
-        (u) =>
-            u.name.toLowerCase().includes(search.toLowerCase()) ||
-            u.email.toLowerCase().includes(search.toLowerCase()),
-    );
+    const filteredUsers = users;
 
     const getInitials = (name: string) => {
         return name
@@ -115,7 +102,7 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
             <DialogTitle sx={{ fontWeight: 600 }}>
                 Promote User to Admin
             </DialogTitle>
-            <DialogContent>
+            <DialogContent sx={{ pt: 3.5 }}>
                 <Typography
                     variant="body2"
                     color="text.secondary"
@@ -160,7 +147,7 @@ const PromoteUserDialog: React.FC<PromoteUserDialogProps> = ({
                             <Typography variant="body2" color="text.secondary">
                                 {search
                                     ? 'No users match your search'
-                                    : 'No users found'}
+                                    : 'Type a name or email to search users'}
                             </Typography>
                         </Box>
                     ) : (

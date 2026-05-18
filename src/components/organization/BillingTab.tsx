@@ -114,10 +114,16 @@ const BillingTab: React.FC<BillingTabProps> = ({ organization }) => {
                                 Seat Billing
                             </Typography>
                             <Chip
-                                label={seatBilling.billingStatus || 'N/A'}
+                                label={(
+                                    seatBilling.billingStatus || 'N/A'
+                                ).toUpperCase()}
                                 color={
-                                    statusColors[seatBilling.billingStatus] ||
-                                    'default'
+                                    statusColors[
+                                        (
+                                            seatBilling.billingStatus ||
+                                            'UNKNOWN'
+                                        ).toUpperCase()
+                                    ] || 'default'
                                 }
                                 size="small"
                             />

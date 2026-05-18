@@ -6,9 +6,9 @@
         "node": ">=22.0.0"
     },
     "scripts": {
-        "dev": "next dev -p 3002",
+        "dev": "next dev -p 3003",
         "build": "next build",
-        "start": "next start -p 3002",
+        "start": "next start -p 3003",
         "lint": "next lint",
         "format": "prettier --write ./src/**/*.{js,jsx,ts,tsx,css,md,json}",
         "type-check": "tsc --noEmit"

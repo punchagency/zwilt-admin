@@ -331,7 +331,13 @@ const OrganizationsContent: React.FC = () => {
                                         borderBottom: '2px solid',
                                         borderColor: 'divider',
                                     },
+                                    '& .MuiDataGrid-row': { cursor: 'pointer' },
                                 }}
+                                onRowClick={(params) =>
+                                    router.push(
+                                        `/organizations/${params.row._id}`,
+                                    )
+                                }
                             />
                         </div>
                     )}
@@ -364,7 +370,7 @@ const OrganizationsContent: React.FC = () => {
                 fullWidth
             >
                 <DialogTitle>Update Organization Status</DialogTitle>
-                <DialogContent sx={{ pt: 3 }}>
+                <DialogContent sx={{ pt: 3.5 }}>
                     <Box
                         sx={{
                             display: 'flex',

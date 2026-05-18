@@ -17,6 +17,7 @@ import type { Organization } from '@/types';
 interface OrganizationOverviewProps {
     organizations?: Organization[];
     loading?: boolean;
+    onOrgClick?: (org: Organization) => void;
 }
 
 const OrganizationSkeletons = () => (
@@ -45,6 +46,7 @@ const OrganizationSkeletons = () => (
 const OrganizationOverview: React.FC<OrganizationOverviewProps> = ({
     organizations = [],
     loading = false,
+    onOrgClick,
 }) => {
     const topOrgs = organizations.slice(0, 5);
 
@@ -99,9 +101,15 @@ const OrganizationOverview: React.FC<OrganizationOverviewProps> = ({
                         {topOrgs.map((org, index) => (
                             <React.Fragment key={org._id}>
                                 <ListItem
+                                    onClick={() =>
+                                        onOrgClick && onOrgClick(org)
+                                    }
                                     sx={{
                                         px: 0,
                                         py: 1.5,
+                                        cursor: onOrgClick
+                                            ? 'pointer'
+                                            : 'default',
                                         '&:hover': {
                                             backgroundColor: 'action.hover',
                                             borderRadius: 1,

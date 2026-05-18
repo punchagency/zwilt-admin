@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app';
 import type { NextPage } from 'next';
+import Head from 'next/head';
 import { RecoilRoot } from 'recoil';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -25,6 +26,13 @@ export default function App({ Component, pageProps }: ZwiltAdminAppProps) {
 
     return (
         <ErrorBoundary>
+            <Head>
+                <title>Zwilt Admin</title>
+                <meta
+                    name="viewport"
+                    content="initial-scale=1, width=device-width"
+                />
+            </Head>
             <RecoilRoot>
                 <AppTheme>
                     <ApolloProviderWrapper>

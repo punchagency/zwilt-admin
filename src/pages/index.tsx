@@ -195,6 +195,9 @@ const OverviewContent: React.FC = () => {
                     <OrganizationOverview
                         organizations={organizations}
                         loading={loading}
+                        onOrgClick={(org) =>
+                            router.push(`/organizations/${org._id}`)
+                        }
                     />
                 </Grid>
             </Grid>

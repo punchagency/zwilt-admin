@@ -97,7 +97,9 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                 '&:hover': {
                     boxShadow: 1,
                 },
+                cursor: 'pointer',
             }}
+            onClick={() => setExpanded(!expanded)}
         >
             <Box sx={{ display: 'flex', gap: 2 }}>
                 <Avatar

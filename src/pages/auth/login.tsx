@@ -14,8 +14,7 @@ import {
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useMutation } from '@apollo/client';
-import { LOGIN } from '@/graphql/auth';
+import api from '@/services/api';
 import { useRouter } from 'next/router';
 import { useRecoilValue } from 'recoil';
 import themeAtom from '@/atoms/theme-atom';
@@ -56,33 +55,7 @@ const Login: React.FC = () => {
         }
     }, []);
 
-    const [loginMutation, { loading }] = useMutation(LOGIN, {
-        onCompleted: (data: any) => {
-            console.log('[Login] Mutation completed:', data);
-
-            if (!data.login?.success) {
-                console.log('[Login] Login failed:', data.login?.message);
-                setError(data.login?.message || 'Login failed');
-                return;
-            }
-
-            console.log(
-                '[Login] ✅ Login successful, redirecting with window.location.href',
-            );
-            console.log(
-                '[Login] Cookies should be set. Current cookies:',
-                document.cookie,
-            );
-
-            if (typeof window !== 'undefined') {
-                window.location.href = '/';
-            }
-        },
-        onError: (err: Error) => {
-            console.error('[Login] Mutation error:', err);
-            setError(err.message || 'Login failed');
-        },
-    });
+    const [loading, setLoading] = useState(false);
 
     const handleEmailContinue = async () => {
         setError('');
@@ -95,16 +68,43 @@ const Login: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
 
-        await loginMutation({
-            variables: {
-                loginInput: {
-                    email,
-                    password,
-                    rememberMe,
-                },
-            },
-        });
+        try {
+            const response = await api.post('/api/v1/identity/authenticate', {
+                email,
+                password,
+                rememberMe,
+            });
+
+            const data = response.data;
+            console.log('[Login] Authentication completed:', data);
+
+            if (!data.success) {
+                console.log('[Login] Login failed:', data.message);
+                setError(data.message || 'Login failed');
+                return;
+            }
+
+            console.log(
+                '[Login] ✅ Login successful, redirecting with window.location.href',
+            );
+            console.log(
+                '[Login] Cookies should be set. Current cookies:',
+                document.cookie,
+            );
+
+            if (typeof window !== 'undefined') {
+                // Use absolute URL to guarantee we stay on the admin app port,
+                // not accidentally land on the settings app (same localhost, different port).
+                window.location.href = window.location.origin + '/';
+            }
+        } catch (err: any) {
+            console.error('[Login] Authentication error:', err);
+            setError(err.response?.data?.message || err.message || 'Login failed');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -115,7 +115,7 @@ const Login: React.FC = () => {
         }
     };
 
-    const ZwiltLogo = () => (
+    const zwiltLogo = (
         <svg
             width="100"
             height="24"
@@ -155,7 +155,7 @@ const Login: React.FC = () => {
         </svg>
     );
 
-    const EmailStep = () => (
+    const emailStepContent = (
         <Stack
             sx={{
                 gap: 6,
@@ -245,7 +245,7 @@ const Login: React.FC = () => {
         </Stack>
     );
 
-    const PasswordStep = () => (
+    const passwordStepContent = (
         <Stack
             sx={{
                 gap: 6,
@@ -469,6 +469,7 @@ const Login: React.FC = () => {
                         backgroundColor: 'background.paper',
                         borderRadius: { xs: '20px', md: '24px', lg: '30px' },
                         pt: { xs: '40px', md: '50px' },
+                        pb: { xs: '80px', md: '100px' },
                         px: { xs: '20px', md: '60px', lg: '114px' },
                         height: { xs: '600px', md: '680px', lg: '700px' },
                         width: { xs: '90%', md: '700px', lg: '808px' },
@@ -482,13 +483,14 @@ const Login: React.FC = () => {
                     <Stack
                         sx={{
                             gap: '50px',
+                            mb: '40px', // Push content up away from the absolute-positioned footer
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             width: '100%',
                         }}
                     >
-                        <ZwiltLogo />
+                        {zwiltLogo}
 
                         {error && (
                             <Alert
@@ -499,7 +501,7 @@ const Login: React.FC = () => {
                             </Alert>
                         )}
 
-                        {step === 'email' ? <EmailStep /> : <PasswordStep />}
+                        {step === 'email' ? emailStepContent : passwordStepContent}
                     </Stack>
 
                     {step === 'password' && (
@@ -536,6 +538,7 @@ const Login: React.FC = () => {
                                     fontSize: '16px',
                                     fontWeight: 500,
                                     lineHeight: '19.2px',
+                                    marginTop: '5px',
                                     color: backHovered
                                         ? 'text.primary'
                                         : 'text.secondary',

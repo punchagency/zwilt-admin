@@ -47,7 +47,7 @@ const RoleChangeDialog: React.FC<RoleChangeDialogProps> = ({
             <DialogTitle sx={{ fontWeight: 600 }}>
                 Change Admin Role
             </DialogTitle>
-            <DialogContent>
+            <DialogContent sx={{ pt: 3.5 }}>
                 <Box sx={{ mb: 3 }}>
                     <Typography variant="body2" color="text.secondary">
                         Changing role for <strong>{adminName}</strong>

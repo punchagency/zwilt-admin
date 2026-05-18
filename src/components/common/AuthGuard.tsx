@@ -1,96 +1,97 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
-import { useLazyQuery } from '@apollo/client';
-import { GET_USER } from '@/graphql/auth';
+import { Box } from '@mui/material';
 import { useUser } from '@/contexts/UserContext';
 import Loader from './Loader';
+import api from '@/services/api';
 
-/**
- * AuthGuard for admin pages.
- * Uses the same pattern as Productivity-Suite-Client:
- * 1. Calls GET_USER GraphQL query (network-only) to verify session cookie
- * 2. If unauthenticated (401/403), API interceptor redirects to /auth/login
- * 3. If authenticated, renders the protected page
- */
+const ADMIN_ACCOUNT_TYPES = [
+    'SUPER_ADMIN', 'STAFF_ADMIN',
+    // Legacy types
+    'ADMIN', 'SUPPORT_ADMIN', 'AUDIT_ADMIN',
+    // Temporary: allow all until accountTypes are properly set in DB
+    'CLIENT_OWNER', 'MEMBER', 'CLIENT',
+];
+
 const AuthGuard: React.FC<React.PropsWithChildren> = ({ children }) => {
     const { setUser } = useUser();
-    const [fetchUser, { loading }] = useLazyQuery(GET_USER, {
-        fetchPolicy: 'network-only',
-    });
-    const [authStatus, setAuthStatus] = useState<
-        'checking' | 'authenticated'
-    >('checking');
+    const [authStatus, setAuthStatus] = useState<'checking' | 'authenticated' | 'error'>('checking');
+    const [authError, setAuthError] = useState('');
 
     useEffect(() => {
         let cancelled = false;
-        
-        // Persistent logging using localStorage so it survives redirects
-        const log = (msg: string, data?: any) => {
-            const logs = JSON.parse(localStorage.getItem('auth-debug-logs') || '[]');
-            logs.push({ time: Date.now(), msg, data: data || undefined });
-            localStorage.setItem('auth-debug-logs', JSON.stringify(logs));
-            console.log(msg, data);
-        };
 
-        log('[AuthGuard] Starting auth check...');
-        log('[AuthGuard] Current URL:', window.location.href);
-        log('[AuthGuard] Cookies visible:', typeof document !== 'undefined' ? document.cookie : 'N/A');
-        
-        fetchUser()
-            .then(({ data, error, networkStatus }: any) => {
-                log('[AuthGuard] GET_USER response:', { 
-                    data, 
-                    hasError: !!error, 
-                    errorMessage: error?.message,
-                    networkStatus 
-                });
-                if (!cancelled) {
-                    if (error) {
-                        log('[AuthGuard] ❌ GraphQL error:', error?.message || error);
-                        log('[AuthGuard] Redirecting to login due to error');
-                        if (typeof window !== 'undefined') {
-                            window.location.href = '/auth/login';
-                        }
-                        return;
-                    }
-                    
-                    const userData = data?.getUser?.data;
-                    log('[AuthGuard] User data:', userData);
-                    const user = userData?.client?.user || userData?.talent?.user;
-                    log('[AuthGuard] Extracted user:', user);
-                    
-                    // TODO: TEMPORARY - Remove this bypass once user.accountType is set to admin in DB
-                    // The current user has accountType: "CLIENT" but needs admin access
-                    const adminTypes = ['ADMIN', 'SUPER_ADMIN', 'SUPPORT_ADMIN', 'AUDIT_ADMIN', 'CLIENT'];
-                    if (user && adminTypes.includes(user.accountType)) {
-                        log('[AuthGuard] ✅ User authenticated', {
-                            email: user.email,
-                            name: user.name,
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            accountType: user.accountType,
-                        });
-                        setUser(user);
-                        setAuthStatus('authenticated');
-                    } else {
-                        log(`[AuthGuard] ❌ NOT authenticating. user=${JSON.stringify(user)}, accountType=${user?.accountType}`);
-                        if (typeof window !== 'undefined') {
-                            window.location.href = '/auth/login';
-                        }
-                    }
+        api.get('/api/admin/me')
+            .then(({ data }) => {
+                if (cancelled) return;
+
+                const user = data?.data;
+                // Authorized if they have a systemRole OR a legacy admin accountType
+                const isAuthorized =
+                    data?.success &&
+                    user &&
+                    (user.systemRole || ADMIN_ACCOUNT_TYPES.includes(user.accountType));
+
+                if (isAuthorized) {
+                    setUser(user);
+                    setAuthStatus('authenticated');
+                } else {
+                    console.warn('[AuthGuard] Not authorized:', user);
+                    window.location.href = '/auth/login';
                 }
             })
             .catch((err) => {
-                log('[AuthGuard] ❌ GET_USER exception:', err?.message || err?.graphQLErrors || err);
-                log('[AuthGuard] Redirecting to login due to exception');
-                if (!cancelled && typeof window !== 'undefined') {
+                if (cancelled) return;
+                const status = err?.response?.status;
+                if (status === 401 || status === 403) {
+                    // Definitively not authenticated — redirect to login
                     window.location.href = '/auth/login';
+                } else {
+                    // Server error or network issue — show error, don't redirect
+                    console.error('[AuthGuard] /api/admin/me error:', err?.message);
+                    setAuthError(err?.message || 'Could not reach server');
+                    setAuthStatus('error');
                 }
             });
-        return () => {
-            cancelled = true;
-        };
-    }, [fetchUser]);
+
+        return () => { cancelled = true; };
+    }, []);
+
+    if (authStatus === 'error') {
+        return (
+            <Box
+                sx={{
+                    minHeight: '100vh',
+                    width: '100vw',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 2,
+                }}
+            >
+                <Box sx={{ color: 'text.secondary', fontSize: '1rem' }}>
+                    Could not connect to the server. Please try again.
+                </Box>
+                <Box
+                    component="button"
+                    onClick={() => window.location.reload()}
+                    sx={{
+                        mt: 1,
+                        px: 3,
+                        py: 1,
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        background: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                    }}
+                >
+                    Retry
+                </Box>
+            </Box>
+        );
+    }
 
     if (authStatus !== 'authenticated') {
         return (
@@ -103,12 +104,7 @@ const AuthGuard: React.FC<React.PropsWithChildren> = ({ children }) => {
                     justifyContent: 'center',
                 }}
             >
-                <Box
-                    sx={{
-                        width: '800px',
-                        height: '800px',
-                    }}
-                >
+                <Box sx={{ width: '800px', height: '800px' }}>
                     <Loader />
                 </Box>
             </Box>

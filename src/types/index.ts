@@ -20,6 +20,7 @@ export interface UserStats {
     total: number;
     admins: number;
     billableSeats: number;
+    appCounts?: Record<string, number>;
 }
 
 export interface AdminStats {
@@ -67,6 +68,22 @@ export interface OrganizationsResponse {
     pagination: Pagination;
 }
 
+export interface CreateOrganizationPayload {
+    organizationName: string;
+    organizationIndustry: string;
+    organizationWebsite?: string;
+    organizationProfileImg?: string;
+    teamSize: string[];
+    minTeamSize: number;
+    maxTeamSize: number;
+    organizationOwner?: string;
+    ownerEmail?: string;
+    ownerFirstName?: string;
+    ownerLastName?: string;
+    invitedManagerEmail?: string;
+    appAccess?: string[];
+}
+
 export interface ImpersonateResponse {
     token: string;
     user: {
@@ -82,8 +99,20 @@ export interface ImpersonateUserRequest {
     reason?: string;
 }
 
-export type OrganizationStatus = 'ACTIVE' | 'SUSPENDED' | 'DEACTIVATED' | 'TRIAL';
-export type AccountType = 'CLIENT' | 'GUEST' | 'CONTACT' | 'MEMBER' | 'ADMIN' | 'SUPER_ADMIN' | 'SUPPORT_ADMIN' | 'AUDIT_ADMIN';
+export type OrganizationStatus =
+    | 'ACTIVE'
+    | 'SUSPENDED'
+    | 'DEACTIVATED'
+    | 'TRIAL';
+export type AccountType =
+    | 'CLIENT'
+    | 'GUEST'
+    | 'CONTACT'
+    | 'MEMBER'
+    | 'ADMIN'
+    | 'SUPER_ADMIN'
+    | 'SUPPORT_ADMIN'
+    | 'AUDIT_ADMIN';
 export type SeatStatus = 'ACTIVE' | 'SUSPENDED' | 'REMOVED';
 
 export interface UpdateOrganizationStatusRequest {
@@ -213,21 +242,24 @@ export const ADMIN_ROLES_CONFIG: AdminRoleConfig[] = [
     {
         role: 'SUPER_ADMIN',
         label: 'Super Admin',
-        description: 'Full system access including role management and audit trails',
+        description:
+            'Full system access including role management and audit trails',
         color: '#9C27B0',
         permissions: ROLE_PERMISSIONS.SUPER_ADMIN,
     },
     {
         role: 'AUDIT_ADMIN',
         label: 'Audit Admin',
-        description: 'Access to audit logs and read/modify organizations, users, projects',
+        description:
+            'Access to audit logs and read/modify organizations, users, projects',
         color: '#607D8B',
         permissions: ROLE_PERMISSIONS.AUDIT_ADMIN,
     },
     {
         role: 'SUPPORT_ADMIN',
         label: 'Support Admin',
-        description: 'Can manage orgs, users, projects, impersonate, and handle billing',
+        description:
+            'Can manage orgs, users, projects, impersonate, and handle billing',
         color: '#00BCD4',
         permissions: ROLE_PERMISSIONS.SUPPORT_ADMIN,
     },
@@ -359,7 +391,12 @@ export interface AuditFilters {
 
 // ==================== Earnings & Payments ====================
 
-export type PaymentStatus = 'paid' | 'pending' | 'failed' | 'overdue' | 'unknown';
+export type PaymentStatus =
+    | 'paid'
+    | 'pending'
+    | 'failed'
+    | 'overdue'
+    | 'unknown';
 
 export interface EarningsOverview {
     mrr: number;
@@ -393,10 +430,25 @@ export interface PaymentRecord {
 }
 
 export interface SeatPricing {
-    recruitStandard: number;
-    recruitPremium: number;
-    trackerStandard: number;
-    trackerPremium: number;
+    [key: string]: number;
+}
+
+export interface ManagedApplication {
+    _id: string;
+    appId: string;
+    name: string;
+    description: string;
+    basePrice: number;
+    premiumPrice: number;
+    baseUrl?: string;
+    icon?: string;
+    maxSeats?: number;
+    isActive: boolean;
+}
+
+export interface SeatPricingResponse {
+    pricing: SeatPricing;
+    apps: ManagedApplication[];
 }
 
 export interface PaymentsResponse {

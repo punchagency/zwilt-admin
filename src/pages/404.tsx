@@ -49,17 +49,16 @@ const NotFoundPage: React.FC = () => {
                 >
                     The page you&apos;re looking for doesn&apos;t exist or has been moved.
                 </Typography>
-                <Link href="/" passHref>
-                    <Button
-                        variant="contained"
-                        size="large"
-                        startIcon={<HomeIcon />}
-                        component="a"
-                        sx={{ textTransform: 'none', borderRadius: 2, px: 4 }}
-                    >
-                        Back to Home
-                    </Button>
-                </Link>
+                <Button
+                    component={Link}
+                    href="/"
+                    variant="contained"
+                    size="large"
+                    startIcon={<HomeIcon />}
+                    sx={{ textTransform: 'none', borderRadius: 2, px: 4 }}
+                >
+                    Back to Home
+                </Button>
             </Paper>
         </Box>
     );

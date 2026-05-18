@@ -41,7 +41,6 @@ import RoleChangeDialog from '@/components/admin/RoleChangeDialog';
 import AdminConfirmDialog from '@/components/admin/AdminConfirmDialog';
 
 const SuperAdminsPage: React.FC = () => {
-
     // Data state
     const [admins, setAdmins] = useState<SuperAdminUser[]>([]);
     const [total, setTotal] = useState(0);
@@ -57,7 +56,9 @@ const SuperAdminsPage: React.FC = () => {
     const [promoteDialogOpen, setPromoteDialogOpen] = useState(false);
     const [roleDialogOpen, setRoleDialogOpen] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-    const [selectedAdmin, setSelectedAdmin] = useState<SuperAdminUser | null>(null);
+    const [selectedAdmin, setSelectedAdmin] = useState<SuperAdminUser | null>(
+        null,
+    );
 
     // Form state
     const [promoteRole, setPromoteRole] = useState<AdminRole>('SUPER_ADMIN');
@@ -68,7 +69,9 @@ const SuperAdminsPage: React.FC = () => {
     // Action state
     const [actionLoading, setActionLoading] = useState(false);
     const [actionError, setActionError] = useState('');
-    const [actionType, setActionType] = useState<'suspend' | 'delete'>('suspend');
+    const [actionType, setActionType] = useState<'suspend' | 'delete'>(
+        'suspend',
+    );
 
     // Menu state
     const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
@@ -107,7 +110,12 @@ const SuperAdminsPage: React.FC = () => {
                 reason: promoteReason,
             });
             if (res.success) {
-                showSuccess(`${res.data.name} promoted to ${promoteRole.replace('_', ' ')}`);
+                showSuccess(
+                    `${res.data.name} promoted to ${promoteRole.replace(
+                        '_',
+                        ' ',
+                    )}`,
+                );
                 setPromoteDialogOpen(false);
                 setPromoteReason('');
                 fetchAdmins();
@@ -159,7 +167,9 @@ const SuperAdminsPage: React.FC = () => {
             }
             if (res?.success) {
                 showSuccess(
-                    `Admin ${actionType === 'suspend' ? 'suspended' : 'deleted'} successfully`,
+                    `Admin ${
+                        actionType === 'suspend' ? 'suspended' : 'deleted'
+                    } successfully`,
                 );
                 setConfirmDialogOpen(false);
                 setSelectedAdmin(null);
@@ -173,7 +183,10 @@ const SuperAdminsPage: React.FC = () => {
         }
     };
 
-    const openMenu = (e: React.MouseEvent<HTMLElement>, admin: SuperAdminUser) => {
+    const openMenu = (
+        e: React.MouseEvent<HTMLElement>,
+        admin: SuperAdminUser,
+    ) => {
         setMenuAnchor(e.currentTarget);
         setSelectedAdmin(admin);
     };
@@ -292,7 +305,13 @@ const SuperAdminsPage: React.FC = () => {
                     <MenuItem value="">All Roles</MenuItem>
                     {ADMIN_ROLES_CONFIG.map((role) => (
                         <MenuItem key={role.role} value={role.role}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                }}
+                            >
                                 <Box
                                     sx={{
                                         width: 10,
@@ -331,12 +350,22 @@ const SuperAdminsPage: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 600 }}>Admin</TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>
+                                Admin
+                            </TableCell>
                             <TableCell sx={{ fontWeight: 600 }}>Role</TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>Last Active</TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>Created</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 600 }}>Actions</TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>
+                                Status
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>
+                                Last Active
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>
+                                Created
+                            </TableCell>
+                            <TableCell align="right" sx={{ fontWeight: 600 }}>
+                                Actions
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -344,31 +373,86 @@ const SuperAdminsPage: React.FC = () => {
                             ? Array.from(new Array(5)).map((_, i) => (
                                   <TableRow key={i}>
                                       <TableCell>
-                                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                              <Skeleton variant="circular" width={36} height={36} />
+                                          <Box
+                                              sx={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  gap: 1.5,
+                                              }}
+                                          >
+                                              <Skeleton
+                                                  variant="circular"
+                                                  width={36}
+                                                  height={36}
+                                              />
                                               <Box>
-                                                  <Skeleton variant="text" width={120} />
-                                                  <Skeleton variant="text" width={150} />
+                                                  <Skeleton
+                                                      variant="text"
+                                                      width={120}
+                                                  />
+                                                  <Skeleton
+                                                      variant="text"
+                                                      width={150}
+                                                  />
                                               </Box>
                                           </Box>
                                       </TableCell>
-                                      <TableCell><Skeleton variant="rounded" width={100} height={24} /></TableCell>
-                                      <TableCell><Skeleton variant="rounded" width={80} height={24} /></TableCell>
-                                      <TableCell><Skeleton variant="text" width={80} /></TableCell>
-                                      <TableCell><Skeleton variant="text" width={80} /></TableCell>
-                                      <TableCell><Skeleton variant="rounded" width={60} height={24} /></TableCell>
+                                      <TableCell>
+                                          <Skeleton
+                                              variant="rounded"
+                                              width={100}
+                                              height={24}
+                                          />
+                                      </TableCell>
+                                      <TableCell>
+                                          <Skeleton
+                                              variant="rounded"
+                                              width={80}
+                                              height={24}
+                                          />
+                                      </TableCell>
+                                      <TableCell>
+                                          <Skeleton variant="text" width={80} />
+                                      </TableCell>
+                                      <TableCell>
+                                          <Skeleton variant="text" width={80} />
+                                      </TableCell>
+                                      <TableCell>
+                                          <Skeleton
+                                              variant="rounded"
+                                              width={60}
+                                              height={24}
+                                          />
+                                      </TableCell>
                                   </TableRow>
                               ))
                             : admins.map((admin) => (
-                                  <TableRow key={admin._id} hover>
+                                  <TableRow
+                                      key={admin._id}
+                                      hover
+                                      onClick={() => {
+                                          setSelectedAdmin(admin);
+                                          setPromoteRole(admin.accountType);
+                                          setRoleChangeReason('');
+                                          setRoleDialogOpen(true);
+                                      }}
+                                      sx={{ cursor: 'pointer' }}
+                                  >
                                       <TableCell>
-                                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                          <Box
+                                              sx={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  gap: 1.5,
+                                              }}
+                                          >
                                               <Avatar
                                                   src={admin.profile_img}
                                                   sx={{
                                                       width: 36,
                                                       height: 36,
-                                                      backgroundColor: '#50589F',
+                                                      backgroundColor:
+                                                          '#50589F',
                                                       fontSize: '12px',
                                                       fontWeight: 600,
                                                   }}
@@ -376,10 +460,16 @@ const SuperAdminsPage: React.FC = () => {
                                                   {getInitials(admin.name)}
                                               </Avatar>
                                               <Box>
-                                                  <Typography variant="body2" fontWeight={600}>
+                                                  <Typography
+                                                      variant="body2"
+                                                      fontWeight={600}
+                                                  >
                                                       {admin.name}
                                                   </Typography>
-                                                  <Typography variant="caption" color="text.secondary">
+                                                  <Typography
+                                                      variant="caption"
+                                                      color="text.secondary"
+                                                  >
                                                       {admin.email}
                                                   </Typography>
                                               </Box>
@@ -387,48 +477,78 @@ const SuperAdminsPage: React.FC = () => {
                                       </TableCell>
                                       <TableCell>
                                           <Chip
-                                              label={getRoleLabel(admin.accountType)}
+                                              label={getRoleLabel(
+                                                  admin.accountType,
+                                              )}
                                               size="small"
                                               sx={{
-                                                  backgroundColor: `${getRoleColor(admin.accountType)}18`,
-                                                  color: getRoleColor(admin.accountType),
+                                                  backgroundColor: `${getRoleColor(
+                                                      admin.accountType,
+                                                  )}18`,
+                                                  color: getRoleColor(
+                                                      admin.accountType,
+                                                  ),
                                                   fontWeight: 600,
                                                   fontSize: '0.75rem',
                                               }}
                                           />
                                       </TableCell>
                                       <TableCell>
-                                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                          <Box
+                                              sx={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  gap: 1,
+                                              }}
+                                          >
                                               <Box
                                                   sx={{
                                                       width: 8,
                                                       height: 8,
                                                       borderRadius: '50%',
-                                                      backgroundColor: getStatusColor(admin.status),
+                                                      backgroundColor:
+                                                          getStatusColor(
+                                                              admin.status,
+                                                          ),
                                                   }}
                                               />
                                               <Typography variant="body2">
-                                                  {admin.status.charAt(0) + admin.status.slice(1).toLowerCase()}
+                                                  {admin.status.charAt(0) +
+                                                      admin.status
+                                                          .slice(1)
+                                                          .toLowerCase()}
                                               </Typography>
                                           </Box>
                                       </TableCell>
                                       <TableCell>
-                                          <Typography variant="body2" color="text.secondary">
+                                          <Typography
+                                              variant="body2"
+                                              color="text.secondary"
+                                          >
                                               {admin.lastActive
-                                                  ? new Date(admin.lastActive).toLocaleDateString()
+                                                  ? new Date(
+                                                        admin.lastActive,
+                                                    ).toLocaleDateString()
                                                   : 'Never'}
                                           </Typography>
                                       </TableCell>
                                       <TableCell>
-                                          <Typography variant="body2" color="text.secondary">
-                                              {new Date(admin.createdAt).toLocaleDateString()}
+                                          <Typography
+                                              variant="body2"
+                                              color="text.secondary"
+                                          >
+                                              {new Date(
+                                                  admin.createdAt,
+                                              ).toLocaleDateString()}
                                           </Typography>
                                       </TableCell>
                                       <TableCell align="right">
                                           <Tooltip title="Actions">
                                               <IconButton
                                                   size="small"
-                                                  onClick={(e) => openMenu(e, admin)}
+                                                  onClick={(e) =>
+                                                      openMenu(e, admin)
+                                                  }
                                               >
                                                   <MoreVertIcon fontSize="small" />
                                               </IconButton>
@@ -489,7 +609,9 @@ const SuperAdminsPage: React.FC = () => {
                         sx={{ gap: 1 }}
                     >
                         <BlockIcon fontSize="small" />
-                        {selectedAdmin.status === 'SUSPENDED' ? 'Activate' : 'Suspend'}
+                        {selectedAdmin.status === 'SUSPENDED'
+                            ? 'Activate'
+                            : 'Suspend'}
                     </MenuItem>
                     <MenuItem
                         onClick={() => {

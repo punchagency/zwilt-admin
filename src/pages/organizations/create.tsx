@@ -14,6 +14,7 @@ import {
     IconButton,
     FormControlLabel,
     Switch,
+    Checkbox,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -114,6 +115,7 @@ const CreateOrganization: React.FC = () => {
         maxTeamSize: 10,
         organizationOwner: '',
         invitedManagerEmail: '',
+        appAccess: ['tracker'], // Default to Tracker
     });
 
     // Logo Upload State
@@ -150,9 +152,19 @@ const CreateOrganization: React.FC = () => {
             }
         };
 
-        const timer = setTimeout(fetchUsers, 500);
+        const timer = setTimeout(fetchUsers, 800);
         return () => clearTimeout(timer);
     }, [userSearch]);
+
+    const handleAppAccessChange = (appId: string) => {
+        setFormData((prev) => {
+            const current = prev.appAccess || [];
+            const updated = current.includes(appId)
+                ? current.filter((id) => id !== appId)
+                : [...current, appId];
+            return { ...prev, appAccess: updated };
+        });
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -266,11 +278,22 @@ const CreateOrganization: React.FC = () => {
                 }
             }
 
-            const response = await createOrganization({
+            const payload: any = {
                 ...formData,
                 organizationOwner: ownerId,
                 organizationProfileImg: finalLogoUrl,
-            });
+            };
+
+            if (isNewOwner) {
+                payload.ownerEmail = newOwnerData.email;
+                payload.ownerFirstName = newOwnerData.firstName;
+                payload.ownerLastName = newOwnerData.lastName;
+            }
+
+            // Ensure appAccess is included
+            payload.appAccess = formData.appAccess;
+
+            const response = await createOrganization(payload);
             if (response.success) {
                 showSuccess('Organization created successfully');
                 router.push('/organizations');
@@ -658,6 +681,37 @@ const CreateOrganization: React.FC = () => {
                                 placeholder="manager@example.com"
                                 helperText="This person will be sent an invitation with Management role"
                             />
+                        </Grid>
+
+                        <Grid item xs={12} sx={{ mt: 2 }}>
+                            <Typography
+                                variant="subtitle1"
+                                fontWeight={600}
+                                sx={{ mb: 1 }}
+                            >
+                                Application Access
+                            </Typography>
+                            <Box sx={{ display: 'flex', gap: 2 }}>
+                                {['tracker', 'sales', 'core'].map((app) => (
+                                    <FormControlLabel
+                                        key={app}
+                                        control={
+                                            <Checkbox
+                                                checked={(
+                                                    formData.appAccess || []
+                                                ).includes(app)}
+                                                onChange={() =>
+                                                    handleAppAccessChange(app)
+                                                }
+                                            />
+                                        }
+                                        label={
+                                            app.charAt(0).toUpperCase() +
+                                            app.slice(1)
+                                        }
+                                    />
+                                ))}
+                            </Box>
                         </Grid>
 
                         <Grid item xs={12} sx={{ mt: 4 }}>

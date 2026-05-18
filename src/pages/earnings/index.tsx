@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/router';
 import {
     Box,
     Typography,
@@ -17,6 +18,7 @@ import {
     TablePagination,
     Skeleton,
     Link,
+    useTheme,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -73,6 +75,8 @@ const statusColors = {
 };
 
 const EarningsPage: React.FC = () => {
+    const router = useRouter();
+    const theme = useTheme();
     const [overview, setOverview] = useState<EarningsOverview | null>(null);
     const [trend, setTrend] = useState<EarningsTrendPoint[]>([]);
     const [payments, setPayments] = useState<PaymentRecord[]>([]);
@@ -120,7 +124,7 @@ const EarningsPage: React.FC = () => {
             }
             if (planRes.success) setPlanDist(planRes.data);
             if (topRes.success) setTopOrgs(topRes.data);
-            if (pricingRes.success) setPricing(pricingRes.data);
+            if (pricingRes.success) setPricing(pricingRes.data.pricing);
         } catch (error: any) {
             showError('Failed to load earnings data');
         } finally {
@@ -172,7 +176,7 @@ const EarningsPage: React.FC = () => {
                         sx={{
                             p: 3,
                             border: '1.2px solid',
-                            borderColor: '#0000001A',
+                            borderColor: 'divider',
                             borderRadius: 2,
                         }}
                     >
@@ -198,7 +202,7 @@ const EarningsPage: React.FC = () => {
                         sx={{
                             p: 3,
                             border: '1.2px solid',
-                            borderColor: '#0000001A',
+                            borderColor: 'divider',
                             borderRadius: 2,
                         }}
                     >
@@ -224,7 +228,7 @@ const EarningsPage: React.FC = () => {
                         sx={{
                             p: 3,
                             border: '1.2px solid',
-                            borderColor: '#0000001A',
+                            borderColor: 'divider',
                             borderRadius: 2,
                         }}
                     >
@@ -250,7 +254,7 @@ const EarningsPage: React.FC = () => {
                         sx={{
                             p: 3,
                             border: '1.2px solid',
-                            borderColor: '#0000001A',
+                            borderColor: 'divider',
                             borderRadius: 2,
                         }}
                     >
@@ -300,7 +304,11 @@ const EarningsPage: React.FC = () => {
                         <LineChart data={trend}>
                             <CartesianGrid
                                 strokeDasharray="3 3"
-                                stroke="#E0E0E9"
+                                stroke={
+                                    theme.palette.mode === 'dark'
+                                        ? '#333'
+                                        : '#E0E0E9'
+                                }
                             />
                             <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                             <YAxis yAxisId="left" tick={{ fontSize: 12 }} />
@@ -323,7 +331,11 @@ const EarningsPage: React.FC = () => {
                                 type="monotone"
                                 dataKey="orgsCreated"
                                 name="New Orgs"
-                                stroke="#2B2A2F"
+                                stroke={
+                                    theme.palette.mode === 'dark'
+                                        ? '#fff'
+                                        : '#2B2A2F'
+                                }
                                 strokeWidth={2}
                                 dot={{ r: 4 }}
                             />
@@ -448,7 +460,18 @@ const EarningsPage: React.FC = () => {
                                               ),
                                           )
                                         : payments.map((payment) => (
-                                              <TableRow key={payment._id} hover>
+                                              <TableRow
+                                                  key={payment._id}
+                                                  hover
+                                                  onClick={() =>
+                                                      router.push(
+                                                          `/organizations/${payment.organization._id}`,
+                                                      )
+                                                  }
+                                                  sx={{
+                                                      cursor: 'pointer',
+                                                  }}
+                                              >
                                                   <TableCell>
                                                       <Link
                                                           href={`/organizations/${payment.organization._id}`}
@@ -560,7 +583,7 @@ const EarningsPage: React.FC = () => {
                         sx={{
                             p: 3,
                             border: '1.2px solid',
-                            borderColor: '#0000001A',
+                            borderColor: 'divider',
                             borderRadius: 2,
                             mb: 3,
                         }}
@@ -586,14 +609,14 @@ const EarningsPage: React.FC = () => {
                                             sx={{
                                                 textAlign: 'center',
                                                 p: 1.5,
-                                                backgroundColor: '#F8F9FA',
+                                                backgroundColor: 'action.hover',
                                                 borderRadius: 2,
                                             }}
                                         >
                                             <BusinessIcon
                                                 sx={{
                                                     fontSize: 28,
-                                                    color: '#2B2A2F',
+                                                    color: 'text.primary',
                                                     mb: 0.5,
                                                 }}
                                             />
@@ -616,14 +639,14 @@ const EarningsPage: React.FC = () => {
                                             sx={{
                                                 textAlign: 'center',
                                                 p: 1.5,
-                                                backgroundColor: '#F8F9FA',
+                                                backgroundColor: 'action.hover',
                                                 borderRadius: 2,
                                             }}
                                         >
                                             <BusinessIcon
                                                 sx={{
                                                     fontSize: 28,
-                                                    color: '#2B2A2F',
+                                                    color: 'text.primary',
                                                     mb: 0.5,
                                                 }}
                                             />
@@ -646,14 +669,14 @@ const EarningsPage: React.FC = () => {
                                             sx={{
                                                 textAlign: 'center',
                                                 p: 1.5,
-                                                backgroundColor: '#F8F9FA',
+                                                backgroundColor: 'action.hover',
                                                 borderRadius: 2,
                                             }}
                                         >
                                             <BusinessIcon
                                                 sx={{
                                                     fontSize: 28,
-                                                    color: '#2B2A2F',
+                                                    color: 'text.primary',
                                                     mb: 0.5,
                                                 }}
                                             />
@@ -692,7 +715,7 @@ const EarningsPage: React.FC = () => {
                         sx={{
                             p: 3,
                             border: '1.2px solid',
-                            borderColor: '#0000001A',
+                            borderColor: 'divider',
                             borderRadius: 2,
                         }}
                     >

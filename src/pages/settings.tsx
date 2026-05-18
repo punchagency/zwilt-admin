@@ -15,15 +15,15 @@ import SaveIcon from '@mui/icons-material/Save';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { showSuccess, showError } from '@/utils/toast';
 import { getSeatPricing, updateSeatPricing } from '@/services/admin';
-import type { SeatPricing } from '@/types';
+import type {
+    SeatPricing,
+    ManagedApplication,
+    SeatPricingResponse,
+} from '@/types';
 
 const SettingsPage: React.FC = () => {
-    const [pricing, setPricing] = useState<SeatPricing>({
-        recruitStandard: 9,
-        recruitPremium: 99.99,
-        trackerStandard: 9,
-        trackerPremium: 99.99,
-    });
+    const [pricing, setPricing] = useState<SeatPricing>({});
+    const [apps, setApps] = useState<ManagedApplication[]>([]);
     const [pricingLoading, setPricingLoading] = useState(true);
     const [pricingSaving, setPricingSaving] = useState(false);
     const [pricingSuccess, setPricingSuccess] = useState(false);
@@ -34,7 +34,8 @@ const SettingsPage: React.FC = () => {
         try {
             const res = await getSeatPricing();
             if (res.success) {
-                setPricing(res.data);
+                setPricing(res.data.pricing);
+                setApps(res.data.apps);
             }
         } catch (error: any) {
             showError('Failed to load pricing data');
@@ -68,41 +69,16 @@ const SettingsPage: React.FC = () => {
         }
     };
 
-    const updatePrice = (key: keyof SeatPricing, value: number) => {
+    const updatePrice = (
+        appId: string,
+        type: 'Standard' | 'Premium',
+        value: number,
+    ) => {
+        const key = `${appId}${type}`;
         setPricing((prev) => ({ ...prev, [key]: value }));
         setPricingSuccess(false);
         setPricingError('');
     };
-
-    const tierConfigs: Array<{
-        key: keyof SeatPricing;
-        label: string;
-        description: string;
-        premium?: boolean;
-    }> = [
-        {
-            key: 'recruitStandard',
-            label: 'Recruit Standard',
-            description: 'Standard features for Recruit',
-        },
-        {
-            key: 'recruitPremium',
-            label: 'Recruit Premium',
-            description: 'Premium features for Recruit',
-            premium: true,
-        },
-        {
-            key: 'trackerStandard',
-            label: 'Tracker Standard',
-            description: 'Standard features for Tracker',
-        },
-        {
-            key: 'trackerPremium',
-            label: 'Tracker Premium',
-            description: 'Premium features for Tracker',
-            premium: true,
-        },
-    ];
 
     return (
         <Box>
@@ -147,104 +123,136 @@ const SettingsPage: React.FC = () => {
                 )}
 
                 <Grid container spacing={3} sx={{ mb: 3 }}>
-                    {tierConfigs.map((tier) => (
-                        <Grid item xs={12} sm={6} md={3} key={tier.key}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 0.5,
-                                    mb: 0.5,
-                                }}
-                            >
-                                <Typography variant="body2" fontWeight={600}>
-                                    {tier.label}
-                                </Typography>
-                                {tier.premium && (
-                                    <Tooltip
-                                        title={
-                                            <Box sx={{ fontSize: '0.75rem' }}>
-                                                <Typography
-                                                    variant="caption"
-                                                    fontWeight={600}
-                                                    display="block"
-                                                    sx={{ mb: 0.5 }}
-                                                >
-                                                    Premium seats are assigned
-                                                    to users with:
-                                                </Typography>
-                                                <Typography
-                                                    variant="caption"
-                                                    component="span"
-                                                    sx={{
-                                                        fontFamily: 'monospace',
-                                                    }}
-                                                >
-                                                    Recruit: ADMIN, MANAGER,
-                                                    OWNER
-                                                </Typography>
-                                                <br />
-                                                <Typography
-                                                    variant="caption"
-                                                    component="span"
-                                                    sx={{
-                                                        fontFamily: 'monospace',
-                                                    }}
-                                                >
-                                                    Tracker: ORGANIZATION_OWNER,
-                                                    ORGANIZATION_MANAGER
-                                                </Typography>
-                                            </Box>
-                                        }
-                                        arrow
-                                        placement="top"
-                                    >
-                                        <InfoOutlinedIcon
-                                            sx={{
-                                                fontSize: 14,
-                                                color: 'text.secondary',
-                                            }}
-                                        />
-                                    </Tooltip>
-                                )}
-                            </Box>
-                            <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                display="block"
-                                sx={{ mb: 2 }}
-                            >
-                                {tier.description}
-                            </Typography>
-                            {pricingLoading ? (
-                                <Skeleton
-                                    variant="text"
-                                    width={80}
-                                    height={40}
-                                />
-                            ) : (
-                                <TextField
-                                    fullWidth
-                                    type="number"
-                                    value={pricing[tier.key]}
-                                    onChange={(e) =>
-                                        updatePrice(
-                                            tier.key,
-                                            Number(e.target.value),
-                                        )
-                                    }
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                $
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    size="small"
-                                />
-                            )}
-                        </Grid>
-                    ))}
+                    {pricingLoading
+                        ? [1, 2, 3, 4].map((i) => (
+                              <Grid item xs={12} sm={6} md={3} key={i}>
+                                  <Skeleton
+                                      variant="rectangular"
+                                      height={100}
+                                      sx={{ borderRadius: 1 }}
+                                  />
+                              </Grid>
+                          ))
+                        : apps.map((app) => (
+                              <React.Fragment key={app._id}>
+                                  {/* Standard Tier */}
+                                  <Grid item xs={12} sm={6} md={3}>
+                                      <Box
+                                          sx={{
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              gap: 0.5,
+                                              mb: 0.5,
+                                          }}
+                                      >
+                                          <Typography
+                                              variant="body2"
+                                              fontWeight={600}
+                                          >
+                                              {app.name} Standard
+                                          </Typography>
+                                      </Box>
+                                      <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                          display="block"
+                                          sx={{ mb: 2 }}
+                                      >
+                                          Base subscription for {app.name}
+                                      </Typography>
+                                      <TextField
+                                          fullWidth
+                                          type="number"
+                                          value={
+                                              pricing[`${app.appId}Standard`] ||
+                                              0
+                                          }
+                                          onChange={(e) =>
+                                              updatePrice(
+                                                  app.appId,
+                                                  'Standard',
+                                                  Number(e.target.value),
+                                              )
+                                          }
+                                          InputProps={{
+                                              startAdornment: (
+                                                  <InputAdornment position="start">
+                                                      $
+                                                  </InputAdornment>
+                                              ),
+                                          }}
+                                          size="small"
+                                      />
+                                  </Grid>
+
+                                  {/* Premium Tier */}
+                                  <Grid item xs={12} sm={6} md={3}>
+                                      <Box
+                                          sx={{
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              gap: 0.5,
+                                              mb: 0.5,
+                                          }}
+                                      >
+                                          <Typography
+                                              variant="body2"
+                                              fontWeight={600}
+                                          >
+                                              {app.name} Premium
+                                          </Typography>
+                                          <Tooltip
+                                              title={
+                                                  <Typography variant="caption">
+                                                      Premium features for{' '}
+                                                      {app.name}
+                                                  </Typography>
+                                              }
+                                              arrow
+                                              placement="top"
+                                          >
+                                              <InfoOutlinedIcon
+                                                  sx={{
+                                                      fontSize: 14,
+                                                      color: 'text.secondary',
+                                                  }}
+                                              />
+                                          </Tooltip>
+                                      </Box>
+                                      <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                          display="block"
+                                          sx={{ mb: 2 }}
+                                      >
+                                          Full features for {app.name}
+                                      </Typography>
+                                      <TextField
+                                          fullWidth
+                                          type="number"
+                                          value={
+                                              pricing[`${app.appId}Premium`] ||
+                                              0
+                                          }
+                                          onChange={(e) =>
+                                              updatePrice(
+                                                  app.appId,
+                                                  'Premium',
+                                                  Number(e.target.value),
+                                              )
+                                          }
+                                          InputProps={{
+                                              startAdornment: (
+                                                  <InputAdornment position="start">
+                                                      $
+                                                  </InputAdornment>
+                                              ),
+                                          }}
+                                          size="small"
+                                      />
+                                  </Grid>
+                              </React.Fragment>
+                          ))}
                 </Grid>
 
                 <Box
@@ -263,7 +271,7 @@ const SettingsPage: React.FC = () => {
                     >
                         Estimated Revenue Per Org (Average)
                     </Typography>
-                    {!pricingLoading && (
+                    {!pricingLoading && Object.keys(pricing).length > 0 && (
                         <Typography
                             variant="h6"
                             fontWeight={700}
@@ -271,11 +279,10 @@ const SettingsPage: React.FC = () => {
                         >
                             $
                             {Math.round(
-                                (pricing.recruitStandard +
-                                    pricing.recruitPremium +
-                                    pricing.trackerStandard +
-                                    pricing.trackerPremium) /
-                                    4,
+                                Object.values(pricing).reduce(
+                                    (acc, current) => acc + current,
+                                    0,
+                                ) / Object.values(pricing).length,
                             )}
                             <Typography
                                 component="span"
@@ -283,7 +290,7 @@ const SettingsPage: React.FC = () => {
                                 color="text.secondary"
                                 sx={{ ml: 0.5 }}
                             >
-                                /seat/mo
+                                /seat/mo (Avg)
                             </Typography>
                         </Typography>
                     )}

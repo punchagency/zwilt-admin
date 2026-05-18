@@ -53,7 +53,7 @@ const CreateAdminDialog: React.FC<CreateAdminDialogProps> = ({
     return (
         <Dialog open={open} onClose={onCancel} maxWidth="sm" fullWidth>
             <DialogTitle sx={{ fontWeight: 600 }}>Create New Admin</DialogTitle>
-            <DialogContent>
+            <DialogContent sx={{ pt: 3.5 }}>
                 <TextField
                     fullWidth
                     label="Full Name"

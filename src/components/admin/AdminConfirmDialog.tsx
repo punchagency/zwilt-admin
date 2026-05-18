@@ -52,7 +52,7 @@ const AdminConfirmDialog: React.FC<AdminConfirmDialogProps> = ({
                 {actionType === 'delete' && <WarningIcon color="error" />}
                 {title}
             </DialogTitle>
-            <DialogContent>
+            <DialogContent sx={{ pt: 3.5 }}>
                 <Typography variant="body2" sx={{ mb: 2 }}>
                     {description}
                 </Typography>

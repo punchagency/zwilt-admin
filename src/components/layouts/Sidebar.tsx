@@ -23,6 +23,7 @@ import { usePathname } from 'next/navigation';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import BusinessIcon from '@mui/icons-material/Business';
 import PeopleIcon from '@mui/icons-material/People';
+import AppsIcon from '@mui/icons-material/Apps';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import HistoryIcon from '@mui/icons-material/History';
@@ -58,6 +59,11 @@ const menuItems: MenuItem[] = [
         text: 'Users',
         path: '/users',
         icon: <PeopleIcon />,
+    },
+    {
+        text: 'App Registry',
+        path: '/apps',
+        icon: <AppsIcon />,
     },
     {
         text: 'Admin Management',
@@ -254,17 +260,12 @@ const Sidebar: React.FC = () => {
                                 disableHoverListener={isOpen}
                             >
                                 <Box sx={{ width: '100%' }}>
-                                    <Link
-                                        href={item.path}
-                                        passHref
-                                        style={{
-                                            width: '100%',
-                                            textDecoration: 'none',
-                                        }}
-                                    >
                                         <ListItemButton
+                                            component={Link}
+                                            href={item.path}
                                             selected={pathname === item.path}
                                             sx={{
+                                                width: '100%',
                                                 borderRadius: 2,
                                                 justifyContent: isOpen
                                                     ? 'initial'
@@ -334,7 +335,6 @@ const Sidebar: React.FC = () => {
                                                     />
                                                 ))}
                                         </ListItemButton>
-                                    </Link>
                                 </Box>
                             </Tooltip>
                         </ListItem>
@@ -351,19 +351,14 @@ const Sidebar: React.FC = () => {
                                             disablePadding
                                             sx={{ pl: 6, mb: 0.5 }}
                                         >
-                                            <Link
-                                                href={child.path}
-                                                passHref
-                                                style={{
-                                                    width: '100%',
-                                                    textDecoration: 'none',
-                                                }}
-                                            >
                                                 <ListItemButton
+                                                    component={Link}
+                                                    href={child.path}
                                                     selected={
                                                         pathname === child.path
                                                     }
                                                     sx={{
+                                                        width: '100%',
                                                         borderRadius: 2,
                                                         '&.Mui-selected': {
                                                             backgroundColor:
@@ -384,7 +379,6 @@ const Sidebar: React.FC = () => {
                                                         }}
                                                     />
                                                 </ListItemButton>
-                                            </Link>
                                         </ListItem>
                                     ))}
                                 </List>
