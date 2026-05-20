@@ -25,8 +25,9 @@ import {
     getUsers,
     getUploadUrl,
     createUser,
+    getSeatPricing,
 } from '@/services/admin';
-import type { SeatUser } from '@/types';
+import type { SeatUser, ManagedApplication } from '@/types';
 import { showSuccess, showError } from '@/utils/toast';
 import axios from 'axios';
 
@@ -104,6 +105,9 @@ const CreateOrganization: React.FC = () => {
     const router = useRouter();
     const [submitting, setSubmitting] = useState(false);
 
+    // Managed apps from DB
+    const [managedApps, setManagedApps] = useState<ManagedApplication[]>([]);
+
     // Form State
     const [formData, setFormData] = useState({
         organizationName: '',
@@ -114,8 +118,7 @@ const CreateOrganization: React.FC = () => {
         minTeamSize: 1,
         maxTeamSize: 10,
         organizationOwner: '',
-        invitedManagerEmail: '',
-        appAccess: ['tracker'], // Default to Tracker
+        appAccess: [] as string[],
     });
 
     // Logo Upload State
@@ -155,6 +158,16 @@ const CreateOrganization: React.FC = () => {
         const timer = setTimeout(fetchUsers, 800);
         return () => clearTimeout(timer);
     }, [userSearch]);
+
+    useEffect(() => {
+        getSeatPricing()
+            .then((res) => {
+                if (res.success && res.data?.apps?.length) {
+                    setManagedApps(res.data.apps.filter((a) => a.isActive));
+                }
+            })
+            .catch(console.error);
+    }, []);
 
     const handleAppAccessChange = (appId: string) => {
         setFormData((prev) => {
@@ -290,7 +303,6 @@ const CreateOrganization: React.FC = () => {
                 payload.ownerLastName = newOwnerData.lastName;
             }
 
-            // Ensure appAccess is included
             payload.appAccess = formData.appAccess;
 
             const response = await createOrganization(payload);
@@ -669,20 +681,6 @@ const CreateOrganization: React.FC = () => {
                             </Grid>
                         )}
 
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Invited Manager Email"
-                                name="invitedManagerEmail"
-                                type="email"
-                                value={formData.invitedManagerEmail}
-                                onChange={handleChange}
-                                required
-                                placeholder="manager@example.com"
-                                helperText="This person will be sent an invitation with Management role"
-                            />
-                        </Grid>
-
                         <Grid item xs={12} sx={{ mt: 2 }}>
                             <Typography
                                 variant="subtitle1"
@@ -691,27 +689,71 @@ const CreateOrganization: React.FC = () => {
                             >
                                 Application Access
                             </Typography>
-                            <Box sx={{ display: 'flex', gap: 2 }}>
-                                {['tracker', 'sales', 'core'].map((app) => (
-                                    <FormControlLabel
-                                        key={app}
-                                        control={
-                                            <Checkbox
-                                                checked={(
+                            {managedApps.length === 0 ? (
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    Loading apps…
+                                </Typography>
+                            ) : (
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexWrap: 'wrap',
+                                        gap: 3,
+                                    }}
+                                >
+                                    {managedApps.map((app) => (
+                                        <FormControlLabel
+                                            key={app.appId}
+                                            control={
+                                                <Checkbox
+                                                    checked={(
+                                                        formData.appAccess || []
+                                                    ).includes(app.appId)}
+                                                    onChange={() =>
+                                                        handleAppAccessChange(
+                                                            app.appId,
+                                                        )
+                                                    }
+                                                />
+                                            }
+                                            label={
+                                                <Box>
+                                                    <Typography
+                                                        variant="body2"
+                                                        fontWeight={500}
+                                                    >
+                                                        {app.name}
+                                                    </Typography>
+                                                    {app.description && (
+                                                        <Typography
+                                                            variant="caption"
+                                                            color="text.secondary"
+                                                        >
+                                                            {app.description}
+                                                        </Typography>
+                                                    )}
+                                                </Box>
+                                            }
+                                            sx={{
+                                                border: '1px solid',
+                                                borderColor: (
                                                     formData.appAccess || []
-                                                ).includes(app)}
-                                                onChange={() =>
-                                                    handleAppAccessChange(app)
-                                                }
-                                            />
-                                        }
-                                        label={
-                                            app.charAt(0).toUpperCase() +
-                                            app.slice(1)
-                                        }
-                                    />
-                                ))}
-                            </Box>
+                                                ).includes(app.appId)
+                                                    ? 'primary.main'
+                                                    : 'divider',
+                                                borderRadius: 2,
+                                                px: 1.5,
+                                                py: 0.5,
+                                                mr: 0,
+                                                transition: 'border-color 0.2s',
+                                            }}
+                                        />
+                                    ))}
+                                </Box>
+                            )}
                         </Grid>
 
                         <Grid item xs={12} sx={{ mt: 4 }}>

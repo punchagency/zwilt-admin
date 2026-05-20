@@ -68,6 +68,7 @@ const OrganizationDetail: React.FC = () => {
         action: 'suspend' | 'delete' | null;
         reason: string;
     }>({ open: false, action: null, reason: '' });
+    const [confirming, setConfirming] = useState(false);
 
     const fetchOrg = useCallback(async () => {
         if (!id || typeof id !== 'string') return;
@@ -98,6 +99,7 @@ const OrganizationDetail: React.FC = () => {
         if (!org || !confirmDialog.action) return;
 
         try {
+            setConfirming(true);
             if (confirmDialog.action === 'suspend') {
                 const newStatus =
                     org.status === 'SUSPENDED' ? 'ACTIVE' : 'SUSPENDED';
@@ -130,6 +132,7 @@ const OrganizationDetail: React.FC = () => {
         } catch (error: any) {
             showError(error.message || 'Action failed');
         } finally {
+            setConfirming(false);
             setConfirmDialog({ open: false, action: null, reason: '' });
         }
     };
@@ -305,6 +308,7 @@ const OrganizationDetail: React.FC = () => {
                 action={confirmDialog.action}
                 organizationName={org.name}
                 reason={confirmDialog.reason}
+                loading={confirming}
                 onReasonChange={(reason) =>
                     setConfirmDialog((prev) => ({ ...prev, reason }))
                 }

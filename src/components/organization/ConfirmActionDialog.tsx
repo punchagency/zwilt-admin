@@ -9,6 +9,7 @@ import {
     Typography,
     Box,
     alpha,
+    CircularProgress,
 } from '@mui/material';
 
 interface ConfirmActionDialogProps {
@@ -16,6 +17,7 @@ interface ConfirmActionDialogProps {
     action: 'suspend' | 'delete' | null;
     organizationName: string;
     reason: string;
+    loading?: boolean;
     onReasonChange: (reason: string) => void;
     onClose: () => void;
     onConfirm: () => void;
@@ -26,6 +28,7 @@ const ConfirmActionDialog: React.FC<ConfirmActionDialogProps> = ({
     action,
     organizationName,
     reason,
+    loading = false,
     onReasonChange,
     onClose,
     onConfirm,
@@ -93,15 +96,28 @@ const ConfirmActionDialog: React.FC<ConfirmActionDialogProps> = ({
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 2 }}>
-                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={onClose} disabled={loading}>
+                    Cancel
+                </Button>
                 <Button
                     variant="contained"
                     color={isDelete ? 'error' : 'warning'}
                     onClick={onConfirm}
-                    disabled={!reason.trim()}
-                    sx={{ textTransform: 'none' }}
+                    disabled={loading || !reason.trim()}
+                    sx={{ textTransform: 'none', minWidth: 160 }}
+                    startIcon={
+                        loading ? (
+                            <CircularProgress size={16} color="inherit" />
+                        ) : undefined
+                    }
                 >
-                    {isDelete ? 'Delete Organization' : 'Confirm Suspension'}
+                    {loading
+                        ? isDelete
+                            ? 'Deleting…'
+                            : 'Suspending…'
+                        : isDelete
+                          ? 'Delete Organization'
+                          : 'Confirm Suspension'}
                 </Button>
             </DialogActions>
         </Dialog>
