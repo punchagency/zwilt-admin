@@ -24,7 +24,7 @@ import {
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
-import { getOrganizations, updateOrganizationStatus } from '@/services/admin';
+import { getOrganizations, updateOrganizationStatus, deleteOrganization } from '@/services/admin';
 import type { Organization, OrganizationStatus } from '@/types';
 import { showError, showSuccess } from '@/utils/toast';
 
@@ -50,14 +50,16 @@ const OrganizationsContent: React.FC = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
     const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [newStatus, setNewStatus] = useState<OrganizationStatus>('ACTIVE');
     const [reason, setReason] = useState('');
+    const [deleteReason, setDeleteReason] = useState('');
     const lastFetchParams = React.useRef<string>('');
 
-    const fetchOrganizations = useCallback(async () => {
+    const fetchOrganizations = useCallback(async (force = false) => {
         const currentParams = JSON.stringify(paginationModel);
-        if (lastFetchParams.current === currentParams) return;
-        lastFetchParams.current = currentParams;
+        if (!force && lastFetchParams.current === currentParams) return;
+        lastFetchParams.current = force ? '' : currentParams;
 
         try {
             setLoading(true);
@@ -97,7 +99,12 @@ const OrganizationsContent: React.FC = () => {
 
     const handleStatusUpdate = () => {
         setStatusDialogOpen(true);
-        handleMenuClose();
+        setAnchorEl(null);
+    };
+
+    const handleDeleteClick = () => {
+        setDeleteDialogOpen(true);
+        setAnchorEl(null);
     };
 
     const handleStatusChange = (event: SelectChangeEvent) => {
@@ -115,7 +122,7 @@ const OrganizationsContent: React.FC = () => {
 
             if (response.success) {
                 showSuccess('Organization status updated successfully');
-                fetchOrganizations();
+                fetchOrganizations(true);
             } else {
                 showError('Failed to update organization status');
             }
@@ -124,6 +131,32 @@ const OrganizationsContent: React.FC = () => {
         } finally {
             setStatusDialogOpen(false);
             setReason('');
+            setSelectedOrg(null);
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!selectedOrg) return;
+
+        try {
+            const response = await deleteOrganization(selectedOrg._id, deleteReason);
+
+            if (response.success) {
+                showSuccess('Organization deleted successfully');
+                setOrganizations((prev) =>
+                    prev.filter((org) => org._id !== selectedOrg._id),
+                );
+                setTotalRows((prev) => Math.max(0, prev - 1));
+                fetchOrganizations(true);
+            } else {
+                showError('Failed to delete organization');
+            }
+        } catch (error: any) {
+            showError(error.message || 'Error deleting organization');
+        } finally {
+            setDeleteDialogOpen(false);
+            setDeleteReason('');
+            setSelectedOrg(null);
         }
     };
 
@@ -210,7 +243,10 @@ const OrganizationsContent: React.FC = () => {
             renderCell: (params: GridRenderCellParams) => (
                 <IconButton
                     size="small"
-                    onClick={(e) => handleMenuOpen(e, params.row)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleMenuOpen(e, params.row);
+                    }}
                 >
                     <MoreVertIcon />
                 </IconButton>
@@ -356,16 +392,26 @@ const OrganizationsContent: React.FC = () => {
                         if (selectedOrg)
                             router.push(`/organizations/${selectedOrg._id}`);
                         handleMenuClose();
+                        setSelectedOrg(null);
                     }}
                 >
                     View Details
+                </MenuItem>
+                <MenuItem
+                    onClick={handleDeleteClick}
+                    sx={{ color: 'error.main' }}
+                >
+                    Delete
                 </MenuItem>
             </Menu>
 
             {/* Status Update Dialog */}
             <Dialog
                 open={statusDialogOpen}
-                onClose={() => setStatusDialogOpen(false)}
+                onClose={() => {
+                    setStatusDialogOpen(false);
+                    setSelectedOrg(null);
+                }}
                 maxWidth="sm"
                 fullWidth
             >
@@ -406,7 +452,12 @@ const OrganizationsContent: React.FC = () => {
                     </Box>
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 2 }}>
-                    <Button onClick={() => setStatusDialogOpen(false)}>
+                    <Button
+                        onClick={() => {
+                            setStatusDialogOpen(false);
+                            setSelectedOrg(null);
+                        }}
+                    >
                         Cancel
                     </Button>
                     <Button
@@ -415,6 +466,59 @@ const OrganizationsContent: React.FC = () => {
                         sx={{ textTransform: 'none' }}
                     >
                         Update Status
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={() => {
+                    setDeleteDialogOpen(false);
+                    setSelectedOrg(null);
+                }}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>Delete Organization</DialogTitle>
+                <DialogContent sx={{ pt: 3.5 }}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 3,
+                        }}
+                    >
+                        <Typography variant="body1">
+                            Are you sure you want to delete <strong>{selectedOrg?.name}</strong>? This action is permanent and will delete all associated users and data.
+                        </Typography>
+                        <TextField
+                            label="Reason for Deletion (Optional)"
+                            multiline
+                            rows={3}
+                            value={deleteReason}
+                            onChange={(e) => setDeleteReason(e.target.value)}
+                            fullWidth
+                            placeholder="Enter reason for deletion..."
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2 }}>
+                    <Button
+                        onClick={() => {
+                            setDeleteDialogOpen(false);
+                            setSelectedOrg(null);
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleConfirmDelete}
+                        sx={{ textTransform: 'none' }}
+                    >
+                        Delete
                     </Button>
                 </DialogActions>
             </Dialog>
