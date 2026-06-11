@@ -17,12 +17,11 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401 || error.response?.status === 403) {
-            // TODO: Remove bypass once user.accountType is ADMIN
-            // Don't redirect for stats endpoint - it's expected to fail for CLIENT accounts
-            if (!error.config?.url?.includes('/api/admin/stats')) {
-                if (typeof window !== 'undefined') {
-                    window.location.href = '/auth/login';
-                }
+            // Unauthenticated or non-admin (no administrative systemRole). The
+            // server gates every admin route on systemRole, so a 401/403 means
+            // this session has no business in the admin app — send to login.
+            if (typeof window !== 'undefined') {
+                window.location.href = '/auth/login';
             }
         }
         return Promise.reject(error);

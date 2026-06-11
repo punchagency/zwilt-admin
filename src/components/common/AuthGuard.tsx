@@ -4,12 +4,14 @@ import { useUser } from '@/contexts/UserContext';
 import Loader from './Loader';
 import api from '@/services/api';
 
-const ADMIN_ACCOUNT_TYPES = [
-    'SUPER_ADMIN', 'STAFF_ADMIN',
-    // Legacy types
-    'ADMIN', 'SUPPORT_ADMIN', 'AUDIT_ADMIN',
-    // Temporary: allow all until accountTypes are properly set in DB
-    'CLIENT_OWNER', 'MEMBER', 'CLIENT',
+// Authoritative admin entitlement is the systemRole from the Admin DB.
+// Must stay in sync with the server's adminAuth middleware
+// (zwilt-server/src/admin/middleware/adminAuth.ts).
+const ADMIN_SYSTEM_ROLES = [
+    'SUPER_ADMIN',
+    'STAFF_ADMIN',
+    'SUPPORT_ADMIN',
+    'AUDIT_ADMIN',
 ];
 
 const AuthGuard: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -25,11 +27,13 @@ const AuthGuard: React.FC<React.PropsWithChildren> = ({ children }) => {
                 if (cancelled) return;
 
                 const user = data?.data;
-                // Authorized if they have a systemRole OR a legacy admin accountType
+                // Authorized only with an administrative systemRole. The server
+                // also enforces this on /api/admin/me (403 for non-admins), so
+                // this is the client-side mirror for a clean redirect.
                 const isAuthorized =
                     data?.success &&
                     user &&
-                    (user.systemRole || ADMIN_ACCOUNT_TYPES.includes(user.accountType));
+                    ADMIN_SYSTEM_ROLES.includes(user.systemRole);
 
                 if (isAuthorized) {
                     setUser(user);
