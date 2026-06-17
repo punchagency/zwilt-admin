@@ -19,6 +19,9 @@ import {
     Skeleton,
     Link,
     useTheme,
+    useMediaQuery,
+    Card,
+    CardContent,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -77,6 +80,7 @@ const statusColors = {
 const EarningsPage: React.FC = () => {
     const router = useRouter();
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [overview, setOverview] = useState<EarningsOverview | null>(null);
     const [trend, setTrend] = useState<EarningsTrendPoint[]>([]);
     const [payments, setPayments] = useState<PaymentRecord[]>([]);
@@ -148,17 +152,17 @@ const EarningsPage: React.FC = () => {
     };
 
     return (
-        <Box>
+        <Box sx={{ p: isMobile ? 2 : 4, boxSizing: 'border-box' }}>
             <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" fontWeight={700} sx={{ mb: 1 }}>
+                <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight={700} sx={{ mb: 1 }}>
                     Earnings
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body2" color="text.secondary">
                     Track revenue, subscriptions, and payment activity
                 </Typography>
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
                 {quickDateRanges.map((r) => (
                     <Chip
                         key={r.value}
@@ -178,6 +182,7 @@ const EarningsPage: React.FC = () => {
                             border: '1.2px solid',
                             borderColor: 'divider',
                             borderRadius: 2,
+                            boxShadow: isMobile ? '0px 6px 20px rgba(0, 0, 0, 0.10)' : 'none',
                         }}
                     >
                         <Typography
@@ -191,7 +196,7 @@ const EarningsPage: React.FC = () => {
                         {loading ? (
                             <Skeleton variant="text" width={120} height={40} />
                         ) : (
-                            <Typography variant="h4" fontWeight={700}>
+                            <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight={700}>
                                 {formatCurrency(overview?.mrr || 0)}
                             </Typography>
                         )}
@@ -204,6 +209,7 @@ const EarningsPage: React.FC = () => {
                             border: '1.2px solid',
                             borderColor: 'divider',
                             borderRadius: 2,
+                            boxShadow: isMobile ? '0px 6px 20px rgba(0, 0, 0, 0.10)' : 'none',
                         }}
                     >
                         <Typography
@@ -217,7 +223,7 @@ const EarningsPage: React.FC = () => {
                         {loading ? (
                             <Skeleton variant="text" width={120} height={40} />
                         ) : (
-                            <Typography variant="h4" fontWeight={700}>
+                            <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight={700}>
                                 {formatCurrency(overview?.totalCollected || 0)}
                             </Typography>
                         )}
@@ -230,6 +236,7 @@ const EarningsPage: React.FC = () => {
                             border: '1.2px solid',
                             borderColor: 'divider',
                             borderRadius: 2,
+                            boxShadow: isMobile ? '0px 6px 20px rgba(0, 0, 0, 0.10)' : 'none',
                         }}
                     >
                         <Typography
@@ -243,7 +250,7 @@ const EarningsPage: React.FC = () => {
                         {loading ? (
                             <Skeleton variant="text" width={120} height={40} />
                         ) : (
-                            <Typography variant="h4" fontWeight={700}>
+                            <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight={700}>
                                 {formatCurrency(overview?.pending || 0)}
                             </Typography>
                         )}
@@ -256,6 +263,7 @@ const EarningsPage: React.FC = () => {
                             border: '1.2px solid',
                             borderColor: 'divider',
                             borderRadius: 2,
+                            boxShadow: isMobile ? '0px 6px 20px rgba(0, 0, 0, 0.10)' : 'none',
                         }}
                     >
                         <Typography
@@ -269,7 +277,7 @@ const EarningsPage: React.FC = () => {
                         {loading ? (
                             <Skeleton variant="text" width={120} height={40} />
                         ) : (
-                            <Typography variant="h4" fontWeight={700}>
+                            <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight={700}>
                                 {formatCurrency(overview?.overdue || 0)}
                             </Typography>
                         )}
@@ -279,7 +287,7 @@ const EarningsPage: React.FC = () => {
 
             <Paper
                 sx={{
-                    p: 3,
+                    p: isMobile ? 2 : 3,
                     border: '1.2px solid',
                     borderColor: '#0000001A',
                     borderRadius: 2,
@@ -290,7 +298,7 @@ const EarningsPage: React.FC = () => {
                     Organization Growth & Expected Revenue
                 </Typography>
                 {loading ? (
-                    <Skeleton variant="rectangular" width="100%" height={300} />
+                    <Skeleton variant="rectangular" width="100%" height={isMobile ? 220 : 300} />
                 ) : trend.length === 0 ? (
                     <Typography
                         variant="body2"
@@ -300,7 +308,7 @@ const EarningsPage: React.FC = () => {
                         No trend data available
                     </Typography>
                 ) : (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={isMobile ? 220 : 300}>
                         <LineChart data={trend}>
                             <CartesianGrid
                                 strokeDasharray="3 3"
@@ -310,14 +318,16 @@ const EarningsPage: React.FC = () => {
                                         : '#E0E0E9'
                                 }
                             />
-                            <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                            <YAxis yAxisId="left" tick={{ fontSize: 12 }} />
-                            <YAxis
-                                yAxisId="right"
-                                orientation="right"
-                                tick={{ fontSize: 12 }}
-                                tickFormatter={(v) => `$${v}`}
-                            />
+                            <XAxis dataKey="month" tick={{ fontSize: isMobile ? 10 : 12 }} />
+                            <YAxis yAxisId="left" tick={{ fontSize: isMobile ? 10 : 12 }} width={isMobile ? 32 : 40} />
+                            {!isMobile && (
+                                <YAxis
+                                    yAxisId="right"
+                                    orientation="right"
+                                    tick={{ fontSize: 12 }}
+                                    tickFormatter={(v) => `$${v}`}
+                                />
+                            )}
                             <RechartsTooltip
                                 formatter={(value: number, name: string) => {
                                     if (name === 'expectedRevenue')
@@ -346,7 +356,7 @@ const EarningsPage: React.FC = () => {
                                 name="Expected Revenue"
                                 stroke="#6B7280"
                                 strokeWidth={2}
-                                dot={{ r: 4 }}
+                                dot={{ r: isMobile ? 3 : 4 }}
                             />
                         </LineChart>
                     </ResponsiveContainer>
@@ -367,24 +377,25 @@ const EarningsPage: React.FC = () => {
                                 p: 3,
                                 pb: 2,
                                 display: 'flex',
+                                flexDirection: isMobile ? 'column' : 'row',
                                 gap: 2,
-                                alignItems: 'center',
+                                alignItems: isMobile ? 'stretch' : 'center',
                             }}
                         >
                             <Typography variant="h6" fontWeight={600}>
                                 Organizations & Subscriptions
                             </Typography>
-                            <Box sx={{ flex: 1 }} />
+                            {!isMobile && <Box sx={{ flex: 1 }} />}
                             <form
                                 onSubmit={handleSearch}
-                                style={{ display: 'flex' }}
+                                style={{ display: 'flex', width: isMobile ? '100%' : 'auto' }}
                             >
                                 <TextField
                                     placeholder="Search organizations..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     size="small"
-                                    sx={{ width: 200 }}
+                                    sx={{ width: '100%' }}
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">
@@ -399,170 +410,266 @@ const EarningsPage: React.FC = () => {
                             </form>
                         </Box>
 
-                        <TableContainer>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell sx={{ fontWeight: 600 }}>
-                                            Organization
-                                        </TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>
-                                            Active Seats
-                                        </TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>
-                                            Expected Earnings
-                                        </TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>
-                                            Status
-                                        </TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>
-                                            Updated
-                                        </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {loading
-                                        ? Array.from(new Array(5)).map(
-                                              (_, i) => (
-                                                  <TableRow key={i}>
+                        {isMobile ? (
+                            loading ? (
+                                <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    {[...Array(3)].map((_, i) => (
+                                        <Card key={i} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+                                            <CardContent sx={{ p: 2 }}>
+                                                <Skeleton variant="text" width="60%" height={24} sx={{ mb: 1 }} />
+                                                <Skeleton variant="text" width="40%" height={16} sx={{ mb: 1 }} />
+                                                <Skeleton variant="text" width="30%" />
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </Box>
+                            ) : (
+                                <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    {payments.map((payment) => (
+                                        <Card
+                                            key={payment._id}
+                                            onClick={() => router.push(`/organizations/${payment.organization._id}`)}
+                                            sx={{
+                                                border: '1px solid',
+                                                borderColor: 'rgba(0, 0, 0, 0.08)',
+                                                borderRadius: 2,
+                                                boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.12)',
+                                                transition: 'box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out',
+                                                cursor: 'pointer',
+                                                '&:hover': {
+                                                    borderColor: 'primary.main',
+                                                    boxShadow: '0px 12px 28px rgba(0, 0, 0, 0.18)',
+                                                },
+                                            }}
+                                        >
+                                            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                                                    <Box>
+                                                        <Link
+                                                            href={`/organizations/${payment.organization._id}`}
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            sx={{
+                                                                fontWeight: 600,
+                                                                textDecoration: 'none',
+                                                                fontSize: '1rem',
+                                                                '&:hover': {
+                                                                    textDecoration: 'underline',
+                                                                },
+                                                            }}
+                                                        >
+                                                            {payment.organization.name}
+                                                        </Link>
+                                                    </Box>
+                                                    <Chip
+                                                        label={
+                                                            payment.status.charAt(0).toUpperCase() +
+                                                            payment.status.slice(1)
+                                                        }
+                                                        size="small"
+                                                        sx={{
+                                                            backgroundColor: `${statusColors[payment.status as keyof typeof statusColors] || '#6B7280'}18`,
+                                                            color: statusColors[payment.status as keyof typeof statusColors] || '#6B7280',
+                                                            fontWeight: 600,
+                                                            fontSize: '0.75rem',
+                                                        }}
+                                                    />
+                                                </Box>
+
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                                                    <Typography variant="body2" color="text.secondary">Active Seats</Typography>
+                                                    <Typography variant="body2" fontWeight={500}>{payment.activeSeats}</Typography>
+                                                </Box>
+
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                                                    <Typography variant="body2" color="text.secondary">Expected Earnings</Typography>
+                                                    <Typography variant="body2" fontWeight={600}>
+                                                        {formatCurrency(
+                                                            payment.expectedEarnings ||
+                                                                payment.activeSeats * (pricing?.recruitStandard || 9),
+                                                        )}
+                                                        <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
+                                                            /mo
+                                                        </Typography>
+                                                    </Typography>
+                                                </Box>
+
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid', borderColor: 'divider', pt: 1, mt: 1 }}>
+                                                    <Typography variant="caption" color="text.secondary">Updated</Typography>
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {new Date(payment.date).toLocaleDateString()}
+                                                    </Typography>
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </Box>
+                            )
+                        ) : (
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: 600 }}>
+                                                Organization
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 600 }}>
+                                                Active Seats
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 600 }}>
+                                                Expected Earnings
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 600 }}>
+                                                Status
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 600 }}>
+                                                Updated
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {loading
+                                            ? Array.from(new Array(5)).map(
+                                                  (_, i) => (
+                                                      <TableRow key={i}>
+                                                          <TableCell>
+                                                              <Skeleton
+                                                                  variant="text"
+                                                                  width={150}
+                                                              />
+                                                          </TableCell>
+                                                          <TableCell>
+                                                              <Skeleton
+                                                                  variant="text"
+                                                                  width={60}
+                                                              />
+                                                          </TableCell>
+                                                          <TableCell>
+                                                              <Skeleton
+                                                                  variant="text"
+                                                                  width={80}
+                                                              />
+                                                          </TableCell>
+                                                          <TableCell>
+                                                              <Skeleton
+                                                                  variant="rounded"
+                                                                  width={70}
+                                                                  height={24}
+                                                              />
+                                                          </TableCell>
+                                                          <TableCell>
+                                                              <Skeleton
+                                                                  variant="text"
+                                                                  width={80}
+                                                              />
+                                                          </TableCell>
+                                                      </TableRow>
+                                                  ),
+                                              )
+                                            : payments.map((payment) => (
+                                                  <TableRow
+                                                      key={payment._id}
+                                                      hover
+                                                      onClick={() =>
+                                                          router.push(
+                                                              `/organizations/${payment.organization._id}`,
+                                                          )
+                                                      }
+                                                      sx={{
+                                                          cursor: 'pointer',
+                                                      }}
+                                                  >
                                                       <TableCell>
-                                                          <Skeleton
-                                                              variant="text"
-                                                              width={150}
+                                                          <Link
+                                                              href={`/organizations/${payment.organization._id}`}
+                                                              sx={{
+                                                                  fontWeight: 600,
+                                                                  textDecoration:
+                                                                      'none',
+                                                                  '&:hover': {
+                                                                      textDecoration:
+                                                                          'underline',
+                                                                  },
+                                                              }}
+                                                          >
+                                                              {
+                                                                  payment
+                                                                      .organization
+                                                                      .name
+                                                              }
+                                                          </Link>
+                                                      </TableCell>
+                                                      <TableCell>
+                                                          <Typography
+                                                              variant="body2"
+                                                              fontWeight={500}
+                                                          >
+                                                              {payment.activeSeats}
+                                                          </Typography>
+                                                      </TableCell>
+                                                      <TableCell>
+                                                          <Typography
+                                                              variant="body2"
+                                                              fontWeight={600}
+                                                          >
+                                                              {formatCurrency(
+                                                                  payment.expectedEarnings ||
+                                                                      payment.activeSeats *
+                                                                          (pricing?.recruitStandard ||
+                                                                              9),
+                                                              )}
+                                                              <Typography
+                                                                  component="span"
+                                                                  variant="caption"
+                                                                  color="text.secondary"
+                                                                  sx={{ ml: 0.5 }}
+                                                              >
+                                                                  /mo
+                                                              </Typography>
+                                                          </Typography>
+                                                      </TableCell>
+                                                      <TableCell>
+                                                          <Chip
+                                                              label={
+                                                                  payment.status
+                                                                      .charAt(0)
+                                                                      .toUpperCase() +
+                                                                  payment.status.slice(
+                                                                      1,
+                                                                  )
+                                                              }
+                                                              size="small"
+                                                              sx={{
+                                                                  backgroundColor: `${
+                                                                      statusColors[
+                                                                          payment
+                                                                              .status as keyof typeof statusColors
+                                                                      ] || '#6B7280'
+                                                                  }18`,
+                                                                  color: statusColors[
+                                                                      payment.status as keyof typeof statusColors
+                                                                  ] || '#6B7280',
+                                                                  fontWeight: 600,
+                                                                  fontSize:
+                                                                      '0.75rem',
+                                                              }}
                                                           />
                                                       </TableCell>
                                                       <TableCell>
-                                                          <Skeleton
-                                                              variant="text"
-                                                              width={60}
-                                                          />
-                                                      </TableCell>
-                                                      <TableCell>
-                                                          <Skeleton
-                                                              variant="text"
-                                                              width={80}
-                                                          />
-                                                      </TableCell>
-                                                      <TableCell>
-                                                          <Skeleton
-                                                              variant="rounded"
-                                                              width={70}
-                                                              height={24}
-                                                          />
-                                                      </TableCell>
-                                                      <TableCell>
-                                                          <Skeleton
-                                                              variant="text"
-                                                              width={80}
-                                                          />
+                                                          <Typography
+                                                              variant="body2"
+                                                              color="text.secondary"
+                                                          >
+                                                              {new Date(
+                                                                  payment.date,
+                                                              ).toLocaleDateString()}
+                                                          </Typography>
                                                       </TableCell>
                                                   </TableRow>
-                                              ),
-                                          )
-                                        : payments.map((payment) => (
-                                              <TableRow
-                                                  key={payment._id}
-                                                  hover
-                                                  onClick={() =>
-                                                      router.push(
-                                                          `/organizations/${payment.organization._id}`,
-                                                      )
-                                                  }
-                                                  sx={{
-                                                      cursor: 'pointer',
-                                                  }}
-                                              >
-                                                  <TableCell>
-                                                      <Link
-                                                          href={`/organizations/${payment.organization._id}`}
-                                                          sx={{
-                                                              fontWeight: 600,
-                                                              textDecoration:
-                                                                  'none',
-                                                              '&:hover': {
-                                                                  textDecoration:
-                                                                      'underline',
-                                                              },
-                                                          }}
-                                                      >
-                                                          {
-                                                              payment
-                                                                  .organization
-                                                                  .name
-                                                          }
-                                                      </Link>
-                                                  </TableCell>
-                                                  <TableCell>
-                                                      <Typography
-                                                          variant="body2"
-                                                          fontWeight={500}
-                                                      >
-                                                          {payment.activeSeats}
-                                                      </Typography>
-                                                  </TableCell>
-                                                  <TableCell>
-                                                      <Typography
-                                                          variant="body2"
-                                                          fontWeight={600}
-                                                      >
-                                                          {formatCurrency(
-                                                              payment.expectedEarnings ||
-                                                                  payment.activeSeats *
-                                                                      (pricing?.recruitStandard ||
-                                                                          9),
-                                                          )}
-                                                          <Typography
-                                                              component="span"
-                                                              variant="caption"
-                                                              color="text.secondary"
-                                                              sx={{ ml: 0.5 }}
-                                                          >
-                                                              /mo
-                                                          </Typography>
-                                                      </Typography>
-                                                  </TableCell>
-                                                  <TableCell>
-                                                      <Chip
-                                                          label={
-                                                              payment.status
-                                                                  .charAt(0)
-                                                                  .toUpperCase() +
-                                                              payment.status.slice(
-                                                                  1,
-                                                              )
-                                                          }
-                                                          size="small"
-                                                          sx={{
-                                                              backgroundColor: `${
-                                                                  statusColors[
-                                                                      payment
-                                                                          .status
-                                                                  ]
-                                                              }18`,
-                                                              color: statusColors[
-                                                                  payment.status
-                                                              ],
-                                                              fontWeight: 600,
-                                                              fontSize:
-                                                                  '0.75rem',
-                                                          }}
-                                                      />
-                                                  </TableCell>
-                                                  <TableCell>
-                                                      <Typography
-                                                          variant="body2"
-                                                          color="text.secondary"
-                                                      >
-                                                          {new Date(
-                                                              payment.date,
-                                                          ).toLocaleDateString()}
-                                                      </Typography>
-                                                  </TableCell>
-                                              </TableRow>
-                                          ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                                              ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        )}
                         <TablePagination
                             rowsPerPageOptions={[10, 25, 50]}
                             component="div"

@@ -18,6 +18,8 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useUser } from '@/contexts/UserContext';
 import { useRecoilState } from 'recoil';
 import themeAtom from '@/atoms/theme-atom';
+import sidebarAtom from '@/atoms/sidebar-atom';
+import MenuIcon from '@mui/icons-material/Menu';
 
 interface HeaderProps {
     title: string;
@@ -27,6 +29,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ title, breadcrumbs }) => {
     const { user } = useUser();
     const [themeState, setThemeState] = useRecoilState(themeAtom);
+    const [sidebarState, setSidebarState] = useRecoilState(sidebarAtom);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const toggleTheme = () => {
@@ -41,6 +44,10 @@ const Header: React.FC<HeaderProps> = ({ title, breadcrumbs }) => {
 
     const handleMenuClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleToggleMobileSidebar = () => {
+        setSidebarState((prev) => ({ ...prev, isMobileOpen: !prev.isMobileOpen }));
     };
 
     const userInitials =
@@ -67,9 +74,23 @@ const Header: React.FC<HeaderProps> = ({ title, breadcrumbs }) => {
                     alignItems: 'center',
                 }}
             >
-                <Box>
-                    {breadcrumbs && breadcrumbs.length > 0 ? (
-                        <Breadcrumbs
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        edge="start"
+                        onClick={handleToggleMobileSidebar}
+                        sx={{
+                            mr: 2,
+                            display: { md: 'none' },
+                            color: 'text.secondary',
+                        }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Box>
+                        {breadcrumbs && breadcrumbs.length > 0 ? (
+                            <Breadcrumbs
                             separator={<NavigateNextIcon fontSize="small" />}
                             aria-label="breadcrumb"
                             sx={{ mb: 1 }}
@@ -107,6 +128,7 @@ const Header: React.FC<HeaderProps> = ({ title, breadcrumbs }) => {
                         {title}
                     </Typography>
                 </Box>
+            </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <IconButton

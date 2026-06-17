@@ -20,6 +20,10 @@ import {
     Select,
     SelectChangeEvent,
     Skeleton,
+    useTheme,
+    useMediaQuery,
+    TablePagination,
+    Divider,
 } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -40,6 +44,8 @@ const statusColors: Record<
 
 const OrganizationsContent: React.FC = () => {
     const router = useRouter();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [loading, setLoading] = useState(true);
     const [paginationModel, setPaginationModel] = useState({
@@ -255,28 +261,65 @@ const OrganizationsContent: React.FC = () => {
     ];
 
     const OrganizationSkeletons = () => (
-        <Box sx={{ p: 3 }}>
-            {[...Array(5)].map((_, i) => (
-                <Box
-                    key={i}
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 2,
-                        py: 2,
-                        borderBottom: '1px solid',
-                        borderColor: 'divider',
-                    }}
-                >
-                    <Skeleton variant="text" width={150} />
-                    <Skeleton variant="text" width={120} />
-                    <Skeleton variant="rounded" width={80} height={24} />
-                    <Skeleton variant="text" width={60} />
-                    <Skeleton variant="text" width={60} />
-                    <Skeleton variant="text" width={100} />
-                    <Skeleton variant="circular" width={32} height={32} />
-                </Box>
-            ))}
+        <Box sx={{ p: isMobile ? 2 : 3, width: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {isMobile ? (
+                [...Array(3)].map((_, i) => (
+                    <Card key={i} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, boxShadow: 3 }}>
+                        <CardContent sx={{ p: 2 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                                <Box sx={{ width: '60%' }}>
+                                    <Skeleton variant="text" width="80%" height={24} />
+                                    <Skeleton variant="text" width="60%" />
+                                </Box>
+                                <Skeleton variant="rounded" width={80} height={24} />
+                            </Box>
+                            <Divider sx={{ mb: 2 }} />
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Skeleton variant="text" width={50} />
+                                <Skeleton variant="text" width={50} />
+                                <Skeleton variant="text" width={80} />
+                            </Box>
+                        </CardContent>
+                    </Card>
+                ))
+            ) : (
+                [...Array(5)].map((_, i) => (
+                    <Box
+                        key={i}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2,
+                            py: 2,
+                            borderBottom: '1px solid',
+                            borderColor: 'divider',
+                            width: '100%',
+                        }}
+                    >
+                        <Box sx={{ flex: 1, minWidth: 200 }}>
+                            <Skeleton variant="text" width="60%" />
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: 150 }}>
+                            <Skeleton variant="text" width="50%" />
+                        </Box>
+                        <Box sx={{ width: 130 }}>
+                            <Skeleton variant="rounded" width={80} height={24} />
+                        </Box>
+                        <Box sx={{ width: 130 }}>
+                            <Skeleton variant="text" width={40} />
+                        </Box>
+                        <Box sx={{ width: 100 }}>
+                            <Skeleton variant="text" width={40} />
+                        </Box>
+                        <Box sx={{ width: 150 }}>
+                            <Skeleton variant="text" width={80} />
+                        </Box>
+                        <Box sx={{ width: 80, display: 'flex', justifyContent: 'center' }}>
+                            <Skeleton variant="circular" width={32} height={32} />
+                        </Box>
+                    </Box>
+                ))
+            )}
         </Box>
     );
 
@@ -344,6 +387,99 @@ const OrganizationsContent: React.FC = () => {
                 >
                     {loading ? (
                         <OrganizationSkeletons />
+                    ) : isMobile ? (
+                        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            {organizations.map((org) => (
+                                <Card
+                                    key={org._id}
+                                    onClick={() => router.push(`/organizations/${org._id}`)}
+                                    sx={{
+                                        border: '1px solid',
+                                        borderColor: 'rgba(0, 0, 0, 0.08)',
+                                        borderRadius: 2,
+                                        boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.12)',
+                                        cursor: 'pointer',
+                                        '&:hover': {
+                                            borderColor: 'primary.main',
+                                            boxShadow: '0px 12px 28px rgba(0, 0, 0, 0.18)',
+                                        },
+                                    }}
+                                >
+                                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                                            <Box>
+                                                <Typography variant="subtitle1" fontWeight={700} color="text.primary">
+                                                    {org.name}
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    Admin: {org.admin?.name || 'N/A'}
+                                                </Typography>
+                                            </Box>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <Chip
+                                                    label={org.status}
+                                                    color={statusColors[org.status as OrganizationStatus]}
+                                                    size="small"
+                                                />
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleMenuOpen(e, org);
+                                                    }}
+                                                >
+                                                    <MoreVertIcon fontSize="small" />
+                                                </IconButton>
+                                            </Box>
+                                        </Box>
+
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid', borderColor: 'divider', pt: 1.5, mt: 1 }}>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                    Active Seats
+                                                </Typography>
+                                                <Typography variant="body2" fontWeight={600}>
+                                                    {org.activeSeatCount || 0}
+                                                </Typography>
+                                            </Box>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                    Users
+                                                </Typography>
+                                                <Typography variant="body2" fontWeight={600}>
+                                                    {org.userCount || 0}
+                                                </Typography>
+                                            </Box>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                    Created
+                                                </Typography>
+                                                <Typography variant="body2" fontWeight={600}>
+                                                    {new Date(org.createdAt).toLocaleDateString()}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                            <TablePagination
+                                component="div"
+                                count={totalRows}
+                                page={paginationModel.page}
+                                onPageChange={(_, newPage) => {
+                                    setPaginationModel(prev => ({ ...prev, page: newPage }));
+                                }}
+                                rowsPerPage={paginationModel.pageSize}
+                                onRowsPerPageChange={(e) => {
+                                    setPaginationModel(prev => ({
+                                        ...prev,
+                                        pageSize: parseInt(e.target.value, 10),
+                                        page: 0
+                                    }));
+                                }}
+                                rowsPerPageOptions={[10, 25, 50]}
+                            />
+                        </Box>
                     ) : (
                         <div style={{ flex: 1, minHeight: 0, width: '100%' }}>
                             <DataGrid

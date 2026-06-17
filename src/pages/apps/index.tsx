@@ -16,8 +16,11 @@ import {
     Grid,
     Switch,
     FormControlLabel,
+    Alert,
     styled,
     alpha,
+    useTheme,
+    useMediaQuery,
 } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
@@ -81,6 +84,8 @@ const IOSSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const AppRegistryPage: React.FC = () => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [apps, setApps] = useState<ManagedApplication[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -94,6 +99,7 @@ const AppRegistryPage: React.FC = () => {
         baseUrl: '',
         basePrice: 0,
         premiumPrice: 0,
+        viewerPrice: 0,
         maxSeats: 0,
         isActive: true,
     });
@@ -128,6 +134,7 @@ const AppRegistryPage: React.FC = () => {
                 baseUrl: app.baseUrl || '',
                 basePrice: app.basePrice,
                 premiumPrice: app.premiumPrice,
+                viewerPrice: app.viewerPrice ?? 0,
                 maxSeats: app.maxSeats || 0,
                 isActive: app.isActive,
             });
@@ -140,6 +147,7 @@ const AppRegistryPage: React.FC = () => {
                 baseUrl: '',
                 basePrice: 0,
                 premiumPrice: 0,
+                viewerPrice: 0,
                 maxSeats: 0,
                 isActive: true,
             });
@@ -224,6 +232,17 @@ const AppRegistryPage: React.FC = () => {
             ),
         },
         {
+            field: 'viewerPrice',
+            headerName: 'Viewer Price',
+            width: 120,
+            renderCell: (params: GridRenderCellParams) =>
+                params.row.appId === 'tracker' ? (
+                    <Typography variant="body2">${params.value ?? 0}/mo</Typography>
+                ) : (
+                    <Typography variant="body2" color="text.disabled">—</Typography>
+                ),
+        },
+        {
             field: 'maxSeats',
             headerName: 'Max Seats',
             width: 100,
@@ -262,52 +281,66 @@ const AppRegistryPage: React.FC = () => {
     ];
 
     const AppSkeletons = () => (
-        <Box sx={{ p: 3 }}>
-            {[...Array(3)].map((_, i) => (
-                <Box
-                    key={i}
-                    sx={{
-                        display: 'flex',
-                        gap: 2,
-                        py: 2,
-                        borderBottom: '1px solid',
-                        borderColor: 'divider',
-                    }}
-                >
-                    <Skeleton variant="text" width={200} />
-                    <Skeleton variant="text" width={100} />
-                    <Skeleton variant="text" width={100} />
-                    <Skeleton variant="rounded" width={80} height={24} />
-                    <Skeleton variant="circular" width={32} height={32} />
-                </Box>
-            ))}
+        <Box sx={{ p: isMobile ? 2 : 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {isMobile ? (
+                [...Array(2)].map((_, i) => (
+                    <Card key={i} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, boxShadow: 3 }}>
+                        <CardContent sx={{ p: 2 }}>
+                            <Skeleton variant="text" width="60%" height={24} sx={{ mb: 1 }} />
+                            <Skeleton variant="text" width="40%" height={16} sx={{ mb: 1 }} />
+                            <Skeleton variant="text" width="30%" />
+                        </CardContent>
+                    </Card>
+                ))
+            ) : (
+                [...Array(3)].map((_, i) => (
+                    <Box
+                        key={i}
+                        sx={{
+                            display: 'flex',
+                            gap: 2,
+                            py: 2,
+                            borderBottom: '1px solid',
+                            borderColor: 'divider',
+                        }}
+                    >
+                        <Skeleton variant="text" width={200} />
+                        <Skeleton variant="text" width={100} />
+                        <Skeleton variant="text" width={100} />
+                        <Skeleton variant="rounded" width={80} height={24} />
+                        <Skeleton variant="circular" width={32} height={32} />
+                    </Box>
+                ))
+            )}
         </Box>
     );
 
     return (
         <Box
             sx={{
-                p: 4,
+                p: isMobile ? 2 : 4,
                 display: 'flex',
                 flexDirection: 'column',
                 height: '100%',
+                boxSizing: 'border-box',
             }}
         >
             <Box
                 sx={{
                     display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
+                    alignItems: isMobile ? 'stretch' : 'center',
+                    gap: 2,
                     mb: 4,
                 }}
             >
                 <Box>
-                    <Typography variant="h4" fontWeight={700} gutterBottom>
+                    <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight={700} gutterBottom>
                         App Registry
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">
-                        Manage available applications, pricing, and resource
-                        limits.
+                    <Typography variant="body2" color="text.secondary">
+                        Manage available applications, pricing, and resource limits.
                     </Typography>
                 </Box>
                 <Button
@@ -320,6 +353,7 @@ const AppRegistryPage: React.FC = () => {
                         py: 1.2,
                         textTransform: 'none',
                         fontWeight: 600,
+                        width: isMobile ? '100%' : 'auto',
                     }}
                 >
                     Add New App
@@ -347,6 +381,95 @@ const AppRegistryPage: React.FC = () => {
                 >
                     {loading ? (
                         <AppSkeletons />
+                    ) : isMobile ? (
+                        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            {apps.map((app) => (
+                                <Card
+                                    key={app._id}
+                                    onClick={() => handleOpenModal(app)}
+                                    sx={{
+                                        border: '1px solid',
+                                        borderColor: 'rgba(0, 0, 0, 0.08)',
+                                        borderRadius: 2,
+                                        boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.12)',
+                                        transition: 'box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out',
+                                        cursor: 'pointer',
+                                        '&:hover': {
+                                            borderColor: 'primary.main',
+                                            boxShadow: '0px 12px 28px rgba(0, 0, 0, 0.18)',
+                                        },
+                                    }}
+                                >
+                                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                                            <Box>
+                                                <Typography variant="subtitle2" fontWeight={700}>
+                                                    {app.name}
+                                                </Typography>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {app.appId}
+                                                </Typography>
+                                            </Box>
+                                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                                <Chip
+                                                    label={app.isActive ? 'Active' : 'Inactive'}
+                                                    color={app.isActive ? 'success' : 'default'}
+                                                    size="small"
+                                                    sx={{ height: 20, fontSize: '0.7rem' }}
+                                                />
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleOpenModal(app);
+                                                    }}
+                                                >
+                                                    <EditIcon fontSize="small" />
+                                                </IconButton>
+                                            </Box>
+                                        </Box>
+
+                                        {app.description && (
+                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontSize: '0.8rem' }}>
+                                                {app.description}
+                                            </Typography>
+                                        )}
+
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, borderTop: '1px solid', borderColor: 'divider', pt: 1.5 }}>
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <Typography variant="caption" color="text.secondary">Base Price</Typography>
+                                                <Typography variant="body2" fontWeight={600}>
+                                                    ${app.basePrice}/mo
+                                                </Typography>
+                                            </Box>
+
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <Typography variant="caption" color="text.secondary">Premium Price</Typography>
+                                                <Typography variant="body2" fontWeight={600}>
+                                                    ${app.premiumPrice}/mo
+                                                </Typography>
+                                            </Box>
+
+                                            {app.appId === 'tracker' && (
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <Typography variant="caption" color="text.secondary">Viewer Price</Typography>
+                                                    <Typography variant="body2" fontWeight={600}>
+                                                        ${app.viewerPrice ?? 0}/mo
+                                                    </Typography>
+                                                </Box>
+                                            )}
+
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <Typography variant="caption" color="text.secondary">Max Seats</Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {app.maxSeats || 'Unlimited'}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </Box>
                     ) : (
                         <DataGrid
                             rows={apps}
@@ -459,6 +582,28 @@ const AppRegistryPage: React.FC = () => {
                                 helperText="0 for unlimited"
                             />
                         </Grid>
+                        {formData.appId === 'tracker' && (
+                            <>
+                                <Grid item xs={12}>
+                                    <Alert severity="info" sx={{ borderRadius: 2 }}>
+                                        <Typography variant="body2">
+                                            <strong>Tracker Viewer Seats</strong> — The first VIEW-role user per org gets a free lifetime seat (tied to that specific user permanently). Additional VIEW-role users are billed at the price below.
+                                        </Typography>
+                                    </Alert>
+                                </Grid>
+                                <Grid item xs={12} md={4}>
+                                    <TextField
+                                        label="Viewer Price ($)"
+                                        name="viewerPrice"
+                                        type="number"
+                                        value={formData.viewerPrice}
+                                        onChange={handleInputChange}
+                                        fullWidth
+                                        helperText="Price per additional viewer seat/mo"
+                                    />
+                                </Grid>
+                            </>
+                        )}
                         <Grid item xs={12}>
                             <Box
                                 sx={{

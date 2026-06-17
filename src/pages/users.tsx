@@ -19,6 +19,10 @@ import {
     Avatar,
     Skeleton,
     Tooltip,
+    useTheme,
+    useMediaQuery,
+    TablePagination,
+    Divider,
 } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import SearchIcon from '@mui/icons-material/Search';
@@ -47,6 +51,8 @@ const seatStatusColors: Record<SeatStatus, 'success' | 'error' | 'warning'> = {
 
 const UsersContent: React.FC = () => {
     const router = useRouter();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [users, setUsers] = useState<SeatUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [paginationModel, setPaginationModel] = useState({
@@ -114,32 +120,50 @@ const UsersContent: React.FC = () => {
     };
 
     const UserSkeletons = () => (
-        <Box sx={{ p: 3 }}>
-            {[...Array(5)].map((_, i) => (
-                <Box
-                    key={i}
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 2,
-                        py: 2,
-                        borderBottom: '1px solid',
-                        borderColor: 'divider',
-                    }}
-                >
-                    <Skeleton variant="circular" width={36} height={36} />
-                    <Box sx={{ flex: 1 }}>
-                        <Skeleton variant="text" width={120} />
-                        <Skeleton variant="text" width={150} height={20} />
+        <Box sx={{ p: isMobile ? 2 : 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {isMobile ? (
+                [...Array(3)].map((_, i) => (
+                    <Card key={i} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, boxShadow: 3 }}>
+                        <CardContent sx={{ p: 2 }}>
+                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+                                <Skeleton variant="circular" width={40} height={40} />
+                                <Box sx={{ flexGrow: 1 }}>
+                                    <Skeleton variant="text" width="60%" height={24} />
+                                    <Skeleton variant="text" width="40%" height={16} />
+                                </Box>
+                            </Box>
+                            <Skeleton variant="text" width="80%" sx={{ mb: 1 }} />
+                            <Skeleton variant="text" width="50%" />
+                        </CardContent>
+                    </Card>
+                ))
+            ) : (
+                [...Array(5)].map((_, i) => (
+                    <Box
+                        key={i}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2,
+                            py: 2,
+                            borderBottom: '1px solid',
+                            borderColor: 'divider',
+                        }}
+                    >
+                        <Skeleton variant="circular" width={36} height={36} />
+                        <Box sx={{ flex: 1 }}>
+                            <Skeleton variant="text" width={120} />
+                            <Skeleton variant="text" width={150} height={20} />
+                        </Box>
+                        <Skeleton variant="rounded" width={80} height={24} />
+                        <Skeleton variant="text" width={100} />
+                        <Skeleton variant="rounded" width={70} height={24} />
+                        <Skeleton variant="rounded" width={50} height={24} />
+                        <Skeleton variant="text" width={100} />
+                        <Skeleton variant="circular" width={32} height={32} />
                     </Box>
-                    <Skeleton variant="rounded" width={80} height={24} />
-                    <Skeleton variant="text" width={100} />
-                    <Skeleton variant="rounded" width={70} height={24} />
-                    <Skeleton variant="rounded" width={50} height={24} />
-                    <Skeleton variant="text" width={100} />
-                    <Skeleton variant="circular" width={32} height={32} />
-                </Box>
-            ))}
+                ))
+            )}
         </Box>
     );
 
@@ -320,8 +344,10 @@ const UsersContent: React.FC = () => {
             <Box
                 sx={{
                     display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
+                    alignItems: isMobile ? 'stretch' : 'center',
+                    gap: 2,
                     mb: 3,
                     flexShrink: 0,
                 }}
@@ -329,13 +355,13 @@ const UsersContent: React.FC = () => {
                 <Typography variant="h5" fontWeight={600}>
                     User Management
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 2 }}>
                     <TextField
                         placeholder="Search users..."
                         value={search}
                         onChange={handleSearchChange}
                         size="small"
-                        sx={{ width: 250 }}
+                        sx={{ width: isMobile ? '100%' : 250 }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -344,7 +370,7 @@ const UsersContent: React.FC = () => {
                             ),
                         }}
                     />
-                    <FormControl size="small" sx={{ width: 180 }}>
+                    <FormControl size="small" sx={{ width: isMobile ? '100%' : 180 }}>
                         <InputLabel>Account Type</InputLabel>
                         <Select
                             value={accountTypeFilter}
@@ -390,6 +416,139 @@ const UsersContent: React.FC = () => {
                 >
                     {loading ? (
                         <UserSkeletons />
+                    ) : isMobile ? (
+                        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            {users.map((user) => {
+                                const initials = user.firstName?.charAt(0) || user.name?.charAt(0) || 'U';
+                                return (
+                                    <Card
+                                        key={user._id}
+                                        onClick={() => router.push(`/users/${user._id}`)}
+                                        sx={{
+                                            border: '1px solid',
+                                            borderColor: 'rgba(0, 0, 0, 0.08)',
+                                            borderRadius: 2,
+                                            boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.12)',
+                                            transition: 'box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out',
+                                            cursor: 'pointer',
+                                            '&:hover': {
+                                                borderColor: 'primary.main',
+                                                boxShadow: '0px 12px 28px rgba(0, 0, 0, 0.18)',
+                                            },
+                                        }}
+                                    >
+                                        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+                                                <Avatar
+                                                    sx={{
+                                                        width: 40,
+                                                        height: 40,
+                                                        backgroundColor: 'primary.main',
+                                                        fontSize: '0.9rem',
+                                                    }}
+                                                >
+                                                    {initials.toUpperCase()}
+                                                </Avatar>
+                                                <Box sx={{ flexGrow: 1 }}>
+                                                    <Typography variant="subtitle2" fontWeight={700}>
+                                                        {user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim()}
+                                                    </Typography>
+                                                    <Typography variant="caption" color="text.secondary" display="block">
+                                                        {user.email}
+                                                    </Typography>
+                                                </Box>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleMenuOpen(e, user);
+                                                    }}
+                                                >
+                                                    <MoreVertIcon fontSize="small" />
+                                                </IconButton>
+                                            </Box>
+
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1.5 }}>
+                                                <Chip
+                                                    label={user.accountType}
+                                                    size="small"
+                                                    sx={{
+                                                        backgroundColor: accountTypeColors[user.accountType as AccountType] || 'text.disabled',
+                                                        color: '#fff',
+                                                        fontWeight: 600,
+                                                        fontSize: '0.7rem',
+                                                        height: 20,
+                                                    }}
+                                                />
+                                                <Chip
+                                                    label={user.seatStatus}
+                                                    color={seatStatusColors[user.seatStatus] || 'default'}
+                                                    size="small"
+                                                    sx={{ height: 20, fontSize: '0.7rem' }}
+                                                />
+                                                <Chip
+                                                    label={user.source === 'tracker' ? 'Tracker' : 'Recruit'}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    color={user.source === 'tracker' ? 'secondary' : 'primary'}
+                                                    sx={{ height: 20, fontSize: '0.7rem' }}
+                                                />
+                                            </Box>
+
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, borderTop: '1px solid', borderColor: 'divider', pt: 1.5 }}>
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <Typography variant="caption" color="text.secondary">Organization</Typography>
+                                                    <Typography variant="body2" fontWeight={600}>
+                                                        {user.organization?.name || 'N/A'}
+                                                    </Typography>
+                                                </Box>
+
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <Typography variant="caption" color="text.secondary">Apps</Typography>
+                                                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                        {user.appAccess?.slice(0, 2).map((app: string) => (
+                                                            <Chip
+                                                                key={app}
+                                                                label={app}
+                                                                size="small"
+                                                                variant="outlined"
+                                                                sx={{ fontSize: '0.65rem', height: 18 }}
+                                                            />
+                                                        )) || (
+                                                            <Typography variant="caption" color="text.secondary">None</Typography>
+                                                        )}
+                                                    </Box>
+                                                </Box>
+
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <Typography variant="caption" color="text.secondary">Last Active</Typography>
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        {user.lastActive ? new Date(user.lastActive).toLocaleDateString() : 'Never'}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })}
+                            <TablePagination
+                                component="div"
+                                count={totalRows}
+                                page={paginationModel.page}
+                                onPageChange={(_, newPage) => {
+                                    setPaginationModel(prev => ({ ...prev, page: newPage }));
+                                }}
+                                rowsPerPage={paginationModel.pageSize}
+                                onRowsPerPageChange={(e) => {
+                                    setPaginationModel(prev => ({
+                                        ...prev,
+                                        pageSize: parseInt(e.target.value, 10),
+                                        page: 0
+                                    }));
+                                }}
+                                rowsPerPageOptions={[25, 50, 100]}
+                            />
+                        </Box>
                     ) : (
                         <div style={{ flex: 1, minHeight: 0 }}>
                             <DataGrid

@@ -19,6 +19,10 @@ import {
     Avatar,
     Skeleton,
     Tooltip,
+    Card,
+    CardContent,
+    useTheme,
+    useMediaQuery,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
@@ -41,6 +45,8 @@ import RoleChangeDialog from '@/components/admin/RoleChangeDialog';
 import AdminConfirmDialog from '@/components/admin/AdminConfirmDialog';
 
 const SuperAdminsPage: React.FC = () => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     // Data state
     const [admins, setAdmins] = useState<SuperAdminUser[]>([]);
     const [total, setTotal] = useState(0);
@@ -228,33 +234,37 @@ const SuperAdminsPage: React.FC = () => {
     };
 
     return (
-        <Box>
+        <Box sx={{ p: isMobile ? 2 : 4, boxSizing: 'border-box' }}>
             {/* Header */}
             <Box
                 sx={{
                     display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
+                    alignItems: isMobile ? 'stretch' : 'center',
+                    gap: 2,
                     mb: 4,
                 }}
             >
                 <Box>
-                    <Typography variant="h4" fontWeight={700} sx={{ mb: 1 }}>
+                    <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight={700} sx={{ mb: 1 }}>
                         Admin Management
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary">
                         Manage super admins, roles, and permissions
                     </Typography>
                 </Box>
                 <Button
                     variant="contained"
-                    size="large"
+                    size={isMobile ? "medium" : "large"}
                     startIcon={<AddIcon />}
                     onClick={() => setPromoteDialogOpen(true)}
                     sx={{
                         textTransform: 'none',
                         borderRadius: 2,
                         px: 3,
+                        py: isMobile ? 1.2 : undefined,
+                        width: isMobile ? '100%' : 'auto',
                     }}
                 >
                     Promote to Admin
@@ -267,8 +277,9 @@ const SuperAdminsPage: React.FC = () => {
                     p: 2,
                     mb: 3,
                     display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
                     gap: 2,
-                    alignItems: 'center',
+                    alignItems: isMobile ? 'stretch' : 'center',
                     border: '1.2px solid',
                     borderColor: '#0000001A',
                 }}
@@ -300,7 +311,7 @@ const SuperAdminsPage: React.FC = () => {
                         setRoleFilter(e.target.value);
                         setPage(0);
                     }}
-                    sx={{ minWidth: 200 }}
+                    sx={{ minWidth: isMobile ? '100%' : 200 }}
                 >
                     <MenuItem value="">All Roles</MenuItem>
                     {ADMIN_ROLES_CONFIG.map((role) => (
@@ -332,245 +343,386 @@ const SuperAdminsPage: React.FC = () => {
                         setRoleFilter('');
                         setPage(0);
                     }}
-                    sx={{ textTransform: 'none', borderRadius: 2 }}
+                    sx={{ textTransform: 'none', borderRadius: 2, height: isMobile ? 'auto' : 56 }}
                 >
                     Clear Filters
                 </Button>
             </Paper>
 
-            {/* Table */}
-            <TableContainer
-                component={Paper}
-                sx={{
-                    border: '1.2px solid',
-                    borderColor: '#0000001A',
-                    borderRadius: 2,
-                }}
-            >
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ fontWeight: 600 }}>
-                                Admin
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>Role</TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>
-                                Status
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>
-                                Last Active
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>
-                                Created
-                            </TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 600 }}>
-                                Actions
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {loading
-                            ? Array.from(new Array(5)).map((_, i) => (
-                                  <TableRow key={i}>
-                                      <TableCell>
-                                          <Box
-                                              sx={{
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  gap: 1.5,
-                                              }}
-                                          >
-                                              <Skeleton
-                                                  variant="circular"
-                                                  width={36}
-                                                  height={36}
-                                              />
-                                              <Box>
-                                                  <Skeleton
-                                                      variant="text"
-                                                      width={120}
-                                                  />
-                                                  <Skeleton
-                                                      variant="text"
-                                                      width={150}
-                                                  />
-                                              </Box>
-                                          </Box>
-                                      </TableCell>
-                                      <TableCell>
-                                          <Skeleton
-                                              variant="rounded"
-                                              width={100}
-                                              height={24}
-                                          />
-                                      </TableCell>
-                                      <TableCell>
-                                          <Skeleton
-                                              variant="rounded"
-                                              width={80}
-                                              height={24}
-                                          />
-                                      </TableCell>
-                                      <TableCell>
-                                          <Skeleton variant="text" width={80} />
-                                      </TableCell>
-                                      <TableCell>
-                                          <Skeleton variant="text" width={80} />
-                                      </TableCell>
-                                      <TableCell>
-                                          <Skeleton
-                                              variant="rounded"
-                                              width={60}
-                                              height={24}
-                                          />
-                                      </TableCell>
-                                  </TableRow>
-                              ))
-                            : admins.map((admin) => (
-                                  <TableRow
-                                      key={admin._id}
-                                      hover
-                                      onClick={() => {
-                                          setSelectedAdmin(admin);
-                                          setPromoteRole(admin.accountType);
-                                          setRoleChangeReason('');
-                                          setRoleDialogOpen(true);
-                                      }}
-                                      sx={{ cursor: 'pointer' }}
-                                  >
-                                      <TableCell>
-                                          <Box
-                                              sx={{
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  gap: 1.5,
-                                              }}
-                                          >
-                                              <Avatar
-                                                  src={admin.profile_img}
-                                                  sx={{
-                                                      width: 36,
-                                                      height: 36,
-                                                      backgroundColor:
-                                                          '#50589F',
-                                                      fontSize: '12px',
-                                                      fontWeight: 600,
-                                                  }}
-                                              >
-                                                  {getInitials(admin.name)}
-                                              </Avatar>
-                                              <Box>
-                                                  <Typography
-                                                      variant="body2"
-                                                      fontWeight={600}
-                                                  >
-                                                      {admin.name}
-                                                  </Typography>
-                                                  <Typography
-                                                      variant="caption"
-                                                      color="text.secondary"
-                                                  >
-                                                      {admin.email}
-                                                  </Typography>
-                                              </Box>
-                                          </Box>
-                                      </TableCell>
-                                      <TableCell>
-                                          <Chip
-                                              label={getRoleLabel(
-                                                  admin.accountType,
-                                              )}
-                                              size="small"
-                                              sx={{
-                                                  backgroundColor: `${getRoleColor(
-                                                      admin.accountType,
-                                                  )}18`,
-                                                  color: getRoleColor(
-                                                      admin.accountType,
-                                                  ),
-                                                  fontWeight: 600,
-                                                  fontSize: '0.75rem',
-                                              }}
-                                          />
-                                      </TableCell>
-                                      <TableCell>
-                                          <Box
-                                              sx={{
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  gap: 1,
-                                              }}
-                                          >
+            {/* Table or Cards Layout */}
+            {isMobile ? (
+                loading ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        {[...Array(3)].map((_, i) => (
+                            <Card key={i} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, boxShadow: 3 }}>
+                                <CardContent sx={{ p: 2 }}>
+                                    <Skeleton variant="circular" width={36} height={36} sx={{ mb: 1 }} />
+                                    <Skeleton variant="text" width="60%" height={24} sx={{ mb: 1 }} />
+                                    <Skeleton variant="text" width="40%" height={16} sx={{ mb: 1 }} />
+                                    <Skeleton variant="text" width="30%" />
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </Box>
+                ) : (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        {admins.map((admin) => (
+                            <Card
+                                key={admin._id}
+                                onClick={() => {
+                                    setSelectedAdmin(admin);
+                                    setPromoteRole(admin.accountType);
+                                    setRoleChangeReason('');
+                                    setRoleDialogOpen(true);
+                                }}
+                                sx={{
+                                    border: '1px solid',
+                                    borderColor: 'rgba(0, 0, 0, 0.08)',
+                                    borderRadius: 2,
+                                    boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.12)',
+                                    transition: 'box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out',
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        borderColor: 'primary.main',
+                                        boxShadow: '0px 12px 28px rgba(0, 0, 0, 0.18)',
+                                    },
+                                }}
+                            >
+                                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+                                        <Avatar
+                                            src={admin.profile_img}
+                                            sx={{
+                                                width: 36,
+                                                height: 36,
+                                                backgroundColor: '#50589F',
+                                                fontSize: '12px',
+                                                fontWeight: 600,
+                                            }}
+                                        >
+                                            {getInitials(admin.name)}
+                                        </Avatar>
+                                        <Box sx={{ flexGrow: 1 }}>
+                                            <Typography variant="subtitle2" fontWeight={600}>
+                                                {admin.name}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary" display="block">
+                                                {admin.email}
+                                            </Typography>
+                                        </Box>
+                                        <Tooltip title="Actions">
+                                            <IconButton
+                                                size="small"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    openMenu(e, admin);
+                                                }}
+                                            >
+                                                <MoreVertIcon fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Box>
+
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1.5 }}>
+                                        <Chip
+                                            label={getRoleLabel(admin.accountType)}
+                                            size="small"
+                                            sx={{
+                                                backgroundColor: `${getRoleColor(admin.accountType)}18`,
+                                                color: getRoleColor(admin.accountType),
+                                                fontWeight: 600,
+                                                fontSize: '0.75rem',
+                                            }}
+                                        />
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: 1,
+                                                ml: 'auto'
+                                            }}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    width: 8,
+                                                    height: 8,
+                                                    borderRadius: '50%',
+                                                    backgroundColor: getStatusColor(admin.status),
+                                                }}
+                                            />
+                                            <Typography variant="caption">
+                                                {admin.status.charAt(0) + admin.status.slice(1).toLowerCase()}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, borderTop: '1px solid', borderColor: 'divider', pt: 1.5 }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <Typography variant="caption" color="text.secondary">Last Active</Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {admin.lastActive ? new Date(admin.lastActive).toLocaleDateString() : 'Never'}
+                                            </Typography>
+                                        </Box>
+
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <Typography variant="caption" color="text.secondary">Created</Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {new Date(admin.createdAt).toLocaleDateString()}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </CardContent>
+                            </Card>
+                        ))}
+
+                        <TablePagination
+                            rowsPerPageOptions={[10, 25, 50]}
+                            component="div"
+                            count={total}
+                            rowsPerPage={limit}
+                            page={page}
+                            onPageChange={(_, newPage) => setPage(newPage)}
+                            onRowsPerPageChange={(e) => {
+                                setLimit(Number(e.target.value));
+                                setPage(0);
+                            }}
+                        />
+                    </Box>
+                )
+            ) : (
+                <TableContainer
+                    component={Paper}
+                    sx={{
+                        border: '1.2px solid',
+                        borderColor: '#0000001A',
+                        borderRadius: 2,
+                    }}
+                >
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 600 }}>
+                                    Admin
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Role</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>
+                                    Status
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>
+                                    Last Active
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>
+                                    Created
+                                </TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 600 }}>
+                                    Actions
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {loading
+                                ? Array.from(new Array(5)).map((_, i) => (
+                                      <TableRow key={i}>
+                                          <TableCell>
                                               <Box
                                                   sx={{
-                                                      width: 8,
-                                                      height: 8,
-                                                      borderRadius: '50%',
-                                                      backgroundColor:
-                                                          getStatusColor(
-                                                              admin.status,
-                                                          ),
+                                                      display: 'flex',
+                                                      alignItems: 'center',
+                                                      gap: 1.5,
+                                                  }}
+                                              >
+                                                  <Skeleton
+                                                      variant="circular"
+                                                      width={36}
+                                                      height={36}
+                                                  />
+                                                  <Box>
+                                                      <Skeleton
+                                                          variant="text"
+                                                          width={120}
+                                                      />
+                                                      <Skeleton
+                                                          variant="text"
+                                                          width={150}
+                                                      />
+                                                  </Box>
+                                              </Box>
+                                          </TableCell>
+                                          <TableCell>
+                                              <Skeleton
+                                                  variant="rounded"
+                                                  width={100}
+                                                  height={24}
+                                              />
+                                          </TableCell>
+                                          <TableCell>
+                                              <Skeleton
+                                                  variant="rounded"
+                                                  width={80}
+                                                  height={24}
+                                              />
+                                          </TableCell>
+                                          <TableCell>
+                                              <Skeleton variant="text" width={80} />
+                                          </TableCell>
+                                          <TableCell>
+                                              <Skeleton variant="text" width={80} />
+                                          </TableCell>
+                                          <TableCell>
+                                              <Skeleton
+                                                  variant="rounded"
+                                                  width={60}
+                                                  height={24}
+                                              />
+                                          </TableCell>
+                                      </TableRow>
+                                  ))
+                                : admins.map((admin) => (
+                                      <TableRow
+                                          key={admin._id}
+                                          hover
+                                          onClick={() => {
+                                              setSelectedAdmin(admin);
+                                              setPromoteRole(admin.accountType);
+                                              setRoleChangeReason('');
+                                              setRoleDialogOpen(true);
+                                          }}
+                                          sx={{ cursor: 'pointer' }}
+                                      >
+                                          <TableCell>
+                                              <Box
+                                                  sx={{
+                                                      display: 'flex',
+                                                      alignItems: 'center',
+                                                      gap: 1.5,
+                                                  }}
+                                              >
+                                                  <Avatar
+                                                      src={admin.profile_img}
+                                                      sx={{
+                                                          width: 36,
+                                                          height: 36,
+                                                          backgroundColor:
+                                                              '#50589F',
+                                                          fontSize: '12px',
+                                                          fontWeight: 600,
+                                                      }}
+                                                  >
+                                                      {getInitials(admin.name)}
+                                                  </Avatar>
+                                                  <Box>
+                                                      <Typography
+                                                          variant="body2"
+                                                          fontWeight={600}
+                                                      >
+                                                          {admin.name}
+                                                      </Typography>
+                                                      <Typography
+                                                          variant="caption"
+                                                          color="text.secondary"
+                                                      >
+                                                          {admin.email}
+                                                      </Typography>
+                                                  </Box>
+                                              </Box>
+                                          </TableCell>
+                                          <TableCell>
+                                              <Chip
+                                                  label={getRoleLabel(
+                                                      admin.accountType,
+                                                  )}
+                                                  size="small"
+                                                  sx={{
+                                                      backgroundColor: `${getRoleColor(
+                                                          admin.accountType,
+                                                      )}18`,
+                                                      color: getRoleColor(
+                                                          admin.accountType,
+                                                      ),
+                                                      fontWeight: 600,
+                                                      fontSize: '0.75rem',
                                                   }}
                                               />
-                                              <Typography variant="body2">
-                                                  {admin.status.charAt(0) +
-                                                      admin.status
-                                                          .slice(1)
-                                                          .toLowerCase()}
-                                              </Typography>
-                                          </Box>
-                                      </TableCell>
-                                      <TableCell>
-                                          <Typography
-                                              variant="body2"
-                                              color="text.secondary"
-                                          >
-                                              {admin.lastActive
-                                                  ? new Date(
-                                                        admin.lastActive,
-                                                    ).toLocaleDateString()
-                                                  : 'Never'}
-                                          </Typography>
-                                      </TableCell>
-                                      <TableCell>
-                                          <Typography
-                                              variant="body2"
-                                              color="text.secondary"
-                                          >
-                                              {new Date(
-                                                  admin.createdAt,
-                                              ).toLocaleDateString()}
-                                          </Typography>
-                                      </TableCell>
-                                      <TableCell align="right">
-                                          <Tooltip title="Actions">
-                                              <IconButton
-                                                  size="small"
-                                                  onClick={(e) =>
-                                                      openMenu(e, admin)
-                                                  }
+                                          </TableCell>
+                                          <TableCell>
+                                              <Box
+                                                  sx={{
+                                                      display: 'flex',
+                                                      alignItems: 'center',
+                                                      gap: 1,
+                                                  }}
                                               >
-                                                  <MoreVertIcon fontSize="small" />
-                                              </IconButton>
-                                          </Tooltip>
-                                      </TableCell>
-                                  </TableRow>
-                              ))}
-                    </TableBody>
-                </Table>
-                <TablePagination
-                    rowsPerPageOptions={[10, 25, 50]}
-                    component="div"
-                    count={total}
-                    rowsPerPage={limit}
-                    page={page}
-                    onPageChange={(_, newPage) => setPage(newPage)}
-                    onRowsPerPageChange={(e) => {
-                        setLimit(Number(e.target.value));
-                        setPage(0);
-                    }}
-                />
-            </TableContainer>
+                                                  <Box
+                                                      sx={{
+                                                          width: 8,
+                                                          height: 8,
+                                                          borderRadius: '50%',
+                                                          backgroundColor:
+                                                              getStatusColor(
+                                                                  admin.status,
+                                                              ),
+                                                      }}
+                                                  />
+                                                  <Typography variant="body2">
+                                                      {admin.status.charAt(0) +
+                                                          admin.status
+                                                              .slice(1)
+                                                              .toLowerCase()}
+                                                  </Typography>
+                                              </Box>
+                                          </TableCell>
+                                          <TableCell>
+                                              <Typography
+                                                  variant="body2"
+                                                  color="text.secondary"
+                                              >
+                                                  {admin.lastActive
+                                                      ? new Date(
+                                                            admin.lastActive,
+                                                        ).toLocaleDateString()
+                                                      : 'Never'}
+                                              </Typography>
+                                          </TableCell>
+                                          <TableCell>
+                                              <Typography
+                                                  variant="body2"
+                                                  color="text.secondary"
+                                              >
+                                                  {new Date(
+                                                      admin.createdAt,
+                                                  ).toLocaleDateString()}
+                                              </Typography>
+                                          </TableCell>
+                                          <TableCell align="right">
+                                              <Tooltip title="Actions">
+                                                  <IconButton
+                                                      size="small"
+                                                      onClick={(e) =>
+                                                          openMenu(e, admin)
+                                                      }
+                                                  >
+                                                      <MoreVertIcon fontSize="small" />
+                                                  </IconButton>
+                                              </Tooltip>
+                                          </TableCell>
+                                      </TableRow>
+                                  ))}
+                        </TableBody>
+                    </Table>
+                    <TablePagination
+                        rowsPerPageOptions={[10, 25, 50]}
+                        component="div"
+                        count={total}
+                        rowsPerPage={limit}
+                        page={page}
+                        onPageChange={(_, newPage) => setPage(newPage)}
+                        onRowsPerPageChange={(e) => {
+                            setLimit(Number(e.target.value));
+                            setPage(0);
+                        }}
+                    />
+                </TableContainer>
+            )}
 
             {/* Actions Menu */}
             {menuAnchor && selectedAdmin && (

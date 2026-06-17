@@ -76,8 +76,10 @@ const OverviewContent: React.FC = () => {
             <Box
                 sx={{
                     display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
                     justifyContent: 'space-between',
-                    alignItems: 'center',
+                    alignItems: { xs: 'flex-start', sm: 'center' },
+                    gap: 2,
                     mb: 4,
                 }}
             >
@@ -98,6 +100,7 @@ const OverviewContent: React.FC = () => {
                         textTransform: 'none',
                         borderRadius: 2,
                         px: 3,
+                        width: { xs: '100%', sm: 'auto' },
                     }}
                 >
                     Create Organization

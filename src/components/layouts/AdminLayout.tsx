@@ -47,7 +47,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
                     component="main"
                     sx={{
                         flex: 1,
-                        padding: '32px',
+                        padding: { xs: '16px', sm: '24px', md: '32px' },
                         overflow: 'auto',
                         minWidth: 0,
                         width: '100%',

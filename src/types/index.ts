@@ -124,6 +124,7 @@ export interface SeatBillingTier {
     seats: number;
     pricePerSeat: number;
     total: number;
+    freeSeats?: number;
 }
 
 export interface SeatBillingData {
@@ -134,6 +135,7 @@ export interface SeatBillingData {
         recruitStandard: SeatBillingTier;
         trackerPremium: SeatBillingTier;
         trackerStandard: SeatBillingTier;
+        trackerViewer?: SeatBillingTier;
     };
     totalMonthly: number;
 }
@@ -440,6 +442,8 @@ export interface ManagedApplication {
     description: string;
     basePrice: number;
     premiumPrice: number;
+    /** Tracker only: price per paid VIEW-role seat. First seat per org is free for life. */
+    viewerPrice?: number;
     baseUrl?: string;
     icon?: string;
     maxSeats?: number;

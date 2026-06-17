@@ -9,6 +9,9 @@ const nextConfig = {
         domains: [
             'zwilt.s3.amazonaws.com',
             'zwilt-store.s3.amazonaws.com',
+            'punch-zwilt.s3.amazonaws.com',
+            'ui-avatars.com',
+            'avatar.iran.liara.run',
         ],
     },
     reactStrictMode: true,

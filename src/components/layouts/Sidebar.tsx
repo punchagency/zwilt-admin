@@ -15,6 +15,7 @@ import {
     alpha,
     useTheme,
     Tooltip,
+    useMediaQuery,
 } from '@mui/material';
 import { useRecoilState } from 'recoil';
 import sidebarAtom from '@/atoms/sidebar-atom';
@@ -89,10 +90,11 @@ const menuItems: MenuItem[] = [
 
 const Sidebar: React.FC = () => {
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const pathname = usePathname();
     const { user } = useUser();
     const [sidebarState, setSidebarState] = useRecoilState(sidebarAtom);
-    const isOpen = sidebarState.isOpen;
+    const isOpen = isMobile ? true : sidebarState.isOpen;
     const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
     const handleToggleSidebar = () => {
@@ -121,9 +123,11 @@ const Sidebar: React.FC = () => {
 
     return (
         <Drawer
-            variant="permanent"
+            variant={isMobile ? 'temporary' : 'permanent'}
+            open={isMobile ? sidebarState.isMobileOpen : undefined}
+            onClose={isMobile ? () => setSidebarState((prev) => ({ ...prev, isMobileOpen: false })) : undefined}
             sx={{
-                width: isOpen ? DRAWER_WIDTH : DRAWER_COLLAPSED_WIDTH,
+                width: isMobile ? undefined : (isOpen ? DRAWER_WIDTH : DRAWER_COLLAPSED_WIDTH),
                 flexShrink: 0,
                 whiteSpace: 'nowrap',
                 transition: theme.transitions.create('width', {
@@ -217,7 +221,7 @@ const Sidebar: React.FC = () => {
                         </svg>
                     </Box>
                 )}
-                {isOpen && (
+                {isOpen && !isMobile && (
                     <IconButton
                         size="small"
                         onClick={handleToggleSidebar}
@@ -227,7 +231,7 @@ const Sidebar: React.FC = () => {
                     </IconButton>
                 )}
             </Box>
-            {!isOpen && (
+            {!isOpen && !isMobile && (
                 <Box
                     sx={{
                         display: 'flex',
@@ -264,6 +268,13 @@ const Sidebar: React.FC = () => {
                                             component={Link}
                                             href={item.path}
                                             selected={pathname === item.path}
+                                            onClick={() => {
+                                                if (item.children) {
+                                                    handleMenuClick(item.text);
+                                                } else if (isMobile) {
+                                                    setSidebarState((prev) => ({ ...prev, isMobileOpen: false }));
+                                                }
+                                            }}
                                             sx={{
                                                 width: '100%',
                                                 borderRadius: 2,
@@ -357,6 +368,11 @@ const Sidebar: React.FC = () => {
                                                     selected={
                                                         pathname === child.path
                                                     }
+                                                    onClick={() => {
+                                                        if (isMobile) {
+                                                            setSidebarState((prev) => ({ ...prev, isMobileOpen: false }));
+                                                        }
+                                                    }}
                                                     sx={{
                                                         width: '100%',
                                                         borderRadius: 2,
