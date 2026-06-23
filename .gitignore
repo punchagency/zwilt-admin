@@ -15,3 +15,9 @@ yarn-error.log*
 .DS_Store
 *.log
 coverage/
+
+
+.env
+.env.local
+.env.production
+.env.test
