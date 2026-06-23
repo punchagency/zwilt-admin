@@ -19,14 +19,19 @@ const nextConfig = {
         return Date.now().toString();
     },
     async rewrites() {
+        // Proxy target: the zwilt-server API. Driven by NEXT_PUBLIC_API_URL so
+        // prod (set in Vercel: https://api.zwilt.com) proxies correctly; falls
+        // back to the local dev server when the var is unset.
+        const apiBase =
+            process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5005';
         return [
             {
                 source: '/api/:path*',
-                destination: 'http://localhost:5005/api/:path*',
+                destination: `${apiBase}/api/:path*`,
             },
             {
                 source: '/graphql',
-                destination: 'http://localhost:5005/graphql',
+                destination: `${apiBase}/graphql`,
             },
         ];
     },
