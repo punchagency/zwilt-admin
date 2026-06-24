@@ -333,6 +333,14 @@ export const updateSeatPricing = async (
     return response.data;
 };
 
+// Emails a password-reset link to the currently authenticated admin's account.
+export const sendPasswordReset = async (): Promise<
+    ApiResponse<{ email: string }>
+> => {
+    const response = await api.post('/api/admin/send-password-reset');
+    return response.data;
+};
+
 export const createManagedApp = async (
     data: any,
 ): Promise<ApiResponse<ManagedApplication>> => {

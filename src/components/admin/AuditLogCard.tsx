@@ -55,6 +55,7 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
     const [expanded, setExpanded] = useState(false);
     const sev = severityConfig[log.severity] || severityConfig.info;
     const performerName = log.performedBy?.name || 'Unknown';
+    const details = log.details ?? ({} as NonNullable<AuditLog['details']>);
     const initials = performerName
         .split(' ')
         .map((n) => n[0])
@@ -64,6 +65,7 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
 
     const formatTime = (dateStr: string) => {
         const date = new Date(dateStr);
+        if (!dateStr || isNaN(date.getTime())) return '—';
         const now = new Date();
         const diffMs = now.getTime() - date.getTime();
         const diffMins = Math.floor(diffMs / 60000);
@@ -200,10 +202,10 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                         color="text.secondary"
                         sx={{ mt: 0.5, mb: 1 }}
                     >
-                        {log.details.summary}
+                        {details.summary}
                     </Typography>
 
-                    {(log.details.changes || log.details.ipAddress) && (
+                    {(details.changes || details.ipAddress) && (
                         <>
                             <IconButton
                                 size="small"
@@ -225,8 +227,8 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                                         borderRadius: 1,
                                     }}
                                 >
-                                    {log.details.changes &&
-                                        Object.entries(log.details.changes).map(
+                                    {details.changes &&
+                                        Object.entries(details.changes).map(
                                             ([key, value]) => (
                                                 <Box
                                                     key={key}
@@ -271,22 +273,22 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                                                 </Box>
                                             ),
                                         )}
-                                    {log.details.ipAddress && (
+                                    {details.ipAddress && (
                                         <Typography
                                             variant="caption"
                                             color="text.secondary"
                                             sx={{ mt: 1, display: 'block' }}
                                         >
-                                            IP: {log.details.ipAddress}
+                                            IP: {details.ipAddress}
                                         </Typography>
                                     )}
-                                    {log.details.userAgent && (
+                                    {details.userAgent && (
                                         <Typography
                                             variant="caption"
                                             color="text.secondary"
                                             sx={{ display: 'block' }}
                                         >
-                                            UA: {log.details.userAgent}
+                                            UA: {details.userAgent}
                                         </Typography>
                                     )}
                                 </Box>
