@@ -53,8 +53,9 @@ const actionLabels: Record<string, string> = {
 
 const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
     const [expanded, setExpanded] = useState(false);
-    const sev = severityConfig[log.severity];
-    const initials = log.performedBy.name
+    const sev = severityConfig[log.severity] || severityConfig.info;
+    const performerName = log.performedBy?.name || 'Unknown';
+    const initials = performerName
         .split(' ')
         .map((n) => n[0])
         .join('')
@@ -131,13 +132,13 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                                 fontWeight={500}
                                 sx={{ mb: 0.5 }}
                             >
-                                <strong>{log.performedBy.name}</strong>{' '}
+                                <strong>{performerName}</strong>{' '}
                                 <Typography
                                     component="span"
                                     variant="body2"
                                     color="text.secondary"
                                 >
-                                    ({log.performedBy.email})
+                                    ({log.performedBy?.email || '—'})
                                 </Typography>
                             </Typography>
                             <Typography variant="body1" fontWeight={500}>
@@ -176,7 +177,8 @@ const AuditLogCard: React.FC<AuditLogCardProps> = ({ log }) => {
                                 <Chip
                                     label={`${log.target.type}: ${
                                         log.target.name ||
-                                        log.target.id.slice(0, 8)
+                                        log.target.id?.slice(0, 8) ||
+                                        '—'
                                     }`}
                                     size="small"
                                     variant="outlined"
