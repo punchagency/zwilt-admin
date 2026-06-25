@@ -140,7 +140,7 @@ const SuperAdminsPage: React.FC = () => {
         setActionLoading(true);
         setActionError('');
         try {
-            const res = await updateAdminRole(selectedAdmin._id, {
+            const res = await updateAdminRole(selectedAdmin.systemUserId, {
                 role: promoteRole,
                 reason: roleChangeReason,
             });
@@ -167,9 +167,15 @@ const SuperAdminsPage: React.FC = () => {
         try {
             let res;
             if (actionType === 'suspend') {
-                res = await suspendSuperAdmin(selectedAdmin._id, confirmReason);
+                res = await suspendSuperAdmin(
+                    selectedAdmin.systemUserId,
+                    confirmReason,
+                );
             } else {
-                res = await deleteSuperAdmin(selectedAdmin._id, confirmReason);
+                res = await deleteSuperAdmin(
+                    selectedAdmin.systemUserId,
+                    confirmReason,
+                );
             }
             if (res?.success) {
                 showSuccess(
@@ -371,7 +377,7 @@ const SuperAdminsPage: React.FC = () => {
                                 key={admin._id}
                                 onClick={() => {
                                     setSelectedAdmin(admin);
-                                    setPromoteRole(admin.accountType);
+                                    setPromoteRole(admin.systemRole);
                                     setRoleChangeReason('');
                                     setRoleDialogOpen(true);
                                 }}
@@ -425,11 +431,11 @@ const SuperAdminsPage: React.FC = () => {
 
                                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1.5 }}>
                                         <Chip
-                                            label={getRoleLabel(admin.accountType)}
+                                            label={getRoleLabel(admin.systemRole)}
                                             size="small"
                                             sx={{
-                                                backgroundColor: `${getRoleColor(admin.accountType)}18`,
-                                                color: getRoleColor(admin.accountType),
+                                                backgroundColor: `${getRoleColor(admin.systemRole)}18`,
+                                                color: getRoleColor(admin.systemRole),
                                                 fontWeight: 600,
                                                 fontSize: '0.75rem',
                                             }}
@@ -583,7 +589,7 @@ const SuperAdminsPage: React.FC = () => {
                                           hover
                                           onClick={() => {
                                               setSelectedAdmin(admin);
-                                              setPromoteRole(admin.accountType);
+                                              setPromoteRole(admin.systemRole);
                                               setRoleChangeReason('');
                                               setRoleDialogOpen(true);
                                           }}
@@ -629,15 +635,15 @@ const SuperAdminsPage: React.FC = () => {
                                           <TableCell>
                                               <Chip
                                                   label={getRoleLabel(
-                                                      admin.accountType,
+                                                      admin.systemRole,
                                                   )}
                                                   size="small"
                                                   sx={{
                                                       backgroundColor: `${getRoleColor(
-                                                          admin.accountType,
+                                                          admin.systemRole,
                                                       )}18`,
                                                       color: getRoleColor(
-                                                          admin.accountType,
+                                                          admin.systemRole,
                                                       ),
                                                       fontWeight: 600,
                                                       fontSize: '0.75rem',
@@ -743,7 +749,7 @@ const SuperAdminsPage: React.FC = () => {
                 >
                     <MenuItem
                         onClick={() => {
-                            setPromoteRole(selectedAdmin.accountType);
+                            setPromoteRole(selectedAdmin.systemRole);
                             setRoleChangeReason('');
                             setRoleDialogOpen(true);
                         }}
@@ -800,7 +806,7 @@ const SuperAdminsPage: React.FC = () => {
                 <RoleChangeDialog
                     open={roleDialogOpen}
                     adminName={selectedAdmin.name}
-                    currentRole={selectedAdmin.accountType}
+                    currentRole={selectedAdmin.systemRole}
                     newRole={promoteRole}
                     reason={roleChangeReason}
                     loading={actionLoading}

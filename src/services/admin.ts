@@ -374,3 +374,75 @@ export const getUsageReport = async (filters: {
     });
     return response.data;
 };
+
+// ==================== Support Desk API Services ====================
+
+export const getAdminTickets = async (params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+    category?: string;
+    priority?: string;
+    assignedTo?: string;
+}): Promise<ApiResponse<any>> => {
+    const response = await api.get('/api/admin/support/admin/tickets', { params });
+    return response.data;
+};
+
+export const getTicketDetails = async (id: string): Promise<ApiResponse<any>> => {
+    const response = await api.get(`/api/admin/support/admin/tickets/${id}`);
+    return response.data;
+};
+
+export const updateTicketStatus = async (
+    id: string,
+    data: { status?: string; priority?: string },
+): Promise<ApiResponse<any>> => {
+    const response = await api.patch(`/api/admin/support/admin/tickets/${id}/status`, data);
+    return response.data;
+};
+
+export const assignTicket = async (
+    id: string,
+    data: { assignedTo: string | null },
+): Promise<ApiResponse<any>> => {
+    const response = await api.patch(`/api/admin/support/admin/tickets/${id}/assign`, data);
+    return response.data;
+};
+
+export const replyToTicket = async (
+    id: string,
+    data: { message: string },
+): Promise<ApiResponse<any>> => {
+    const response = await api.post(`/api/admin/support/admin/tickets/${id}/reply`, data);
+    return response.data;
+};
+
+export const getAdminChatSessions = async (params?: {
+    status?: string;
+}): Promise<ApiResponse<any>> => {
+    const response = await api.get('/api/admin/support/admin/chats', { params });
+    return response.data;
+};
+
+export const replyToChat = async (
+    id: string,
+    data: { message: string },
+): Promise<ApiResponse<any>> => {
+    const response = await api.post(`/api/admin/support/admin/chats/${id}/reply`, data);
+    return response.data;
+};
+
+export const closeChatSession = async (id: string): Promise<ApiResponse<any>> => {
+    const response = await api.patch(`/api/admin/support/admin/chats/${id}/close`);
+    return response.data;
+};
+
+export const assignChatSession = async (
+    id: string,
+    data: { assignedTo: string | null },
+): Promise<ApiResponse<any>> => {
+    const response = await api.patch(`/api/admin/support/admin/chats/${id}/assign`, data);
+    return response.data;
+};

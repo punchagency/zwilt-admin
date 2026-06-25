@@ -33,7 +33,10 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MenuIcon from '@mui/icons-material/Menu';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import { useUser } from '@/contexts/UserContext';
+import { AdminPermission } from '@/types';
+import { hasPermission } from '@/utils/permissions';
 
 const DRAWER_WIDTH = 260;
 const DRAWER_COLLAPSED_WIDTH = 80;
@@ -42,6 +45,7 @@ interface MenuItem {
     text: string;
     path: string;
     icon: React.ReactNode;
+    permission?: AdminPermission;
     children?: MenuItem[];
 }
 
@@ -55,36 +59,49 @@ const menuItems: MenuItem[] = [
         text: 'Organizations',
         path: '/organizations',
         icon: <BusinessIcon />,
+        permission: 'manage_organizations',
     },
     {
         text: 'Users',
         path: '/users',
         icon: <PeopleIcon />,
+        permission: 'manage_users',
     },
     {
         text: 'App Registry',
         path: '/apps',
         icon: <AppsIcon />,
+        permission: 'manage_system_settings',
     },
     {
         text: 'Admin Management',
         path: '/super-admins',
         icon: <AdminPanelSettingsIcon />,
+        permission: 'manage_super_admins',
     },
     {
         text: 'Earnings',
         path: '/earnings',
         icon: <AttachMoneyIcon />,
+        permission: 'manage_billing',
+    },
+    {
+        text: 'Support Desk',
+        path: '/support',
+        icon: <SupportAgentIcon />,
+        permission: 'view_support',
     },
     {
         text: 'Audit Trails',
         path: '/audit-trails',
         icon: <HistoryIcon />,
+        permission: 'view_audit_logs',
     },
     {
         text: 'Settings',
         path: '/settings',
         icon: <SettingsIcon />,
+        permission: 'manage_system_settings',
     },
 ];
 
@@ -96,6 +113,11 @@ const Sidebar: React.FC = () => {
     const [sidebarState, setSidebarState] = useRecoilState(sidebarAtom);
     const isOpen = isMobile ? true : sidebarState.isOpen;
     const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+
+    const filteredMenuItems = menuItems.filter((item) => {
+        if (!item.permission) return true;
+        return hasPermission(user, item.permission);
+    });
 
     const handleToggleSidebar = () => {
         setSidebarState((prev) => ({ ...prev, isOpen: !prev.isOpen }));
@@ -252,7 +274,7 @@ const Sidebar: React.FC = () => {
             <Divider />
 
             <List sx={{ padding: '16px 0' }}>
-                {menuItems.map((item) => (
+                {filteredMenuItems.map((item) => (
                     <React.Fragment key={item.text}>
                         <ListItem
                             disablePadding

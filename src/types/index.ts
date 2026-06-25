@@ -193,7 +193,7 @@ export interface UsersResponse {
 
 // ==================== SuperAdmin & Role Management ====================
 
-export type AdminRole = 'SUPER_ADMIN' | 'SUPPORT_ADMIN' | 'AUDIT_ADMIN';
+export type AdminRole = 'SUPER_ADMIN' | 'STAFF_ADMIN' | 'SUPPORT_ADMIN' | 'AUDIT_ADMIN';
 export type AdminPermission =
     | 'manage_organizations'
     | 'manage_users'
@@ -203,7 +203,10 @@ export type AdminPermission =
     | 'impersonate_users'
     | 'view_audit_logs'
     | 'manage_system_settings'
-    | 'manage_super_admins';
+    | 'manage_super_admins'
+    | 'view_support'
+    | 'manage_support'
+    | 'delete_support';
 
 export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermission[]> = {
     SUPER_ADMIN: [
@@ -216,12 +219,23 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermission[]> = {
         'view_audit_logs',
         'manage_system_settings',
         'manage_super_admins',
+        'view_support',
+        'manage_support',
+        'delete_support',
+    ],
+    STAFF_ADMIN: [
+        'manage_organizations',
+        'manage_users',
+        'manage_projects',
+        'view_support',
+        'manage_support',
     ],
     AUDIT_ADMIN: [
         'view_audit_logs',
         'manage_organizations',
         'manage_users',
         'manage_projects',
+        'view_support',
     ],
     SUPPORT_ADMIN: [
         'manage_organizations',
@@ -229,6 +243,8 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermission[]> = {
         'manage_projects',
         'impersonate_users',
         'manage_billing',
+        'view_support',
+        'manage_support',
     ],
 };
 
@@ -248,6 +264,14 @@ export const ADMIN_ROLES_CONFIG: AdminRoleConfig[] = [
             'Full system access including role management and audit trails',
         color: '#9C27B0',
         permissions: ROLE_PERMISSIONS.SUPER_ADMIN,
+    },
+    {
+        role: 'STAFF_ADMIN',
+        label: 'Staff Admin',
+        description:
+            'Can manage orgs, users, projects, and handle support queues',
+        color: '#FF9800',
+        permissions: ROLE_PERMISSIONS.STAFF_ADMIN,
     },
     {
         role: 'AUDIT_ADMIN',
@@ -271,7 +295,9 @@ export interface SuperAdminUser {
     _id: string;
     name: string;
     email: string;
-    accountType: AdminRole;
+    accountType: string;
+    systemRole: AdminRole;
+    systemUserId: string;
     profile_img?: string;
     permissions: AdminPermission[];
     isOnline?: boolean;

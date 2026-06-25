@@ -7,6 +7,7 @@ interface UserData {
     firstName?: string;
     lastName?: string;
     accountType?: string;
+    systemRole?: string;
     profile_img?: string;
 }
 
